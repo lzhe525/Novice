@@ -17,9 +17,9 @@
 
 | 任务意图（中文） | Skill 路径 | 说明 |
 |------------------|------------|------|
-| 项目级 AI 扫盘（overview + deep-dive + 模块索引 + 状态） | `skills/scan/scan-project-by-ai.md` | 写入 `.ai/docs/project/overview.md`、`.ai/docs/project/deep-dive.md`、`.ai/indexes/module-index.md`、`.ai/state/scan-status.md` |
+| 项目级 AI 扫盘（overview + deep-dive + 索引 + 状态） | `skills/scan/scan-project-by-ai.md` | 写入 `.ai/docs/project/overview.md`、`.ai/docs/project/deep-dive.md`、`.ai/indexes/module-index.md`、`.ai/indexes/directory-index.md`、`.ai/indexes/file-index.md`、`.ai/state/scan-status.md` |
 | 紧凑项目画像 + 证据表 | `skills/scan/generate-project-adapter-by-ai.md` | 写入 `.ai/docs/project/adapter.md`、`.ai/docs/project/adapter-evidence.md` |
-| 模块级 AI 扫盘（五件套） | `skills/scan/scan-module-by-ai.md` | 写入 `.ai/docs/modules/<moduleRootRelative>/{overview,deep-dive,constraints,change-guide,risk-points}.md`；可选合并更新 `.ai/indexes/module-index.md` |
+| 模块级 AI 扫盘（五件套） | `skills/scan/scan-module-by-ai.md` | 写入 `.ai/docs/modules/<moduleId>/{overview,deep-dive,constraints,change-guide,risk-points}.md`；可选合并更新 `.ai/indexes/module-index.md`、`.ai/indexes/directory-index.md`、`.ai/indexes/file-index.md` |
 | 单文件 AI 扫盘（普通 / 重点） | `skills/scan/scan-file-by-ai.md` | 写入 `.ai/docs/files/...` 下对应 `.md`；`fileImportance` 为 `normal` 或 `critical` |
 
 ## 未提供的能力

@@ -36,7 +36,7 @@
 3. 按「读取范围」完成清单与深读，在内存中维护**断言列表**（每条含：结论短语、依据路径、读取行范围说明）。
 4. 实例化并写入 `adapter.md`：「技术栈标签」≤ **10**；「主入口与关键路径」表格中每行须在步骤 3 中有依据，否则标「未知」并进入 evidence 的「未验证项」。
 5. 实例化 `adapter-evidence.md`：将步骤 3 中**每一条**已写入 adapter 的确定性结论映射到「结论与证据」表；无法在已读文件中印证的条目列入「未验证项」节，**禁止**编造路径。
-6. 「建议后续 Scan」两节（adapter 模板内）列出 **3–10** 条已观察存在的 `{moduleRootRelative}` 或 `{filePathRelative}`。
+6. 「建议后续 Scan」两节（adapter 模板内）列出 **3–10** 条已观察存在的 `{moduleId}`（或候选逻辑模块名，须可在 `module-map` 或目录结构中对应）或 `{filePathRelative}`。
 7. 分别校验两份 front matter 后写入；若人类曾将 adapter `reviewedByHuman` 置 `true`，覆盖前须提醒备份。
 
 ## 7. 读取范围

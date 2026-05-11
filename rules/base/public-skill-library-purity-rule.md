@@ -11,7 +11,7 @@
 
 ## 禁止写入 `{skillLibraryRoot}` 的内容（示例）
 
-- 某具体项目的扫描结果、索引、报告。
+- 某具体项目的扫描结果、索引、报告（含模块五件套 `overview` / `deep-dive` / `constraints` / `change-guide` / `risk-points` 的全文或片段、`.ai/indexes/` 下表格行、扫描 metadata）。
 - 项目私有配置、密钥、环境变量值。
 - 仅适用于单一业务仓库的 Skill 正文（应放在 `{projectRoot}/.ai/skills/project-local/` 等路径，由后续能力定义）。
 - 从业务项目复制粘贴的源码片段作为「事实数据」长期存放。

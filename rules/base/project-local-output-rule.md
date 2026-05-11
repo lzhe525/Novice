@@ -22,7 +22,7 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 **扫盘（第二阶段）**在仅执行 `skills/scan/**` 所列 Skill 时，允许在下列路径创建或更新文档（须与各 Skill「写入位置」节一致）：
 
 - `{projectRoot}/.ai/docs/**` 下 Markdown；
-- `{projectRoot}/.ai/indexes/**` 下索引类 Markdown（例如 `scan-project-by-ai` 生成的 `module-index.md`）；
+- `{projectRoot}/.ai/indexes/**` 下索引类 Markdown（例如 `scan-project-by-ai` 生成的 `module-index.md`、`directory-index.md`、`file-index.md`；`scan-module-by-ai` 可合并更新上述索引）；
 - `{projectRoot}/.ai/state/scan-status.md`（项目级扫盘状态，由 `scan-project-by-ai` 维护）。
 
 **不得**在 `.ai/` 外散落上述扫盘产物。
