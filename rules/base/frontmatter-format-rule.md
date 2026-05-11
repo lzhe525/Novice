@@ -2,54 +2,31 @@
 
 ## 适用主体
 
-所有在 `{skillLibraryRoot}` 或 `{projectRoot}/.ai/` 下**创建或编辑**带 YAML front matter 的 Markdown 文件的 Agent；以及维护 HACF 模板、Skill 产出物的人类维护者。
-
-「HACF 管理的 Markdown」在本 MVP 中指：公共库内由本仓库版本控制的 Markdown，以及 Bootstrap / 就绪检查等 Skill **按模板写入**的项目侧 `.ai/**/*.md`（含 `readiness.md`、`skillkit-status.md`、`language-policy.md`、`SKILLKIT_LINK.md`、`AI_ENTRY.md` 等）。
+在 `{projectRoot}/.ai/**` 或公共库内编写、生成 Markdown 文档的 Agent。
 
 ## 规则陈述
 
-### 1. 合法 YAML front matter
+凡由 Agent 生成或更新的项目侧 Markdown 文档，若包含 **YAML front matter**，必须符合合法 YAML 语法，并满足下列格式约定，以便人类与工具稳定解析。
 
-凡包含 metadata 的上述 Markdown 文件，**必须**在正文首段使用标准 YAML front matter：以第一行 `---` 开始、以单独一行的 `---` 结束，且中间内容可被常见 YAML 1.2 解析器（如 `yaml.safe_load`）**无报错**解析为映射（对象）。
+## 格式约定
 
-### 2. 冒号与空格
+1. **分隔符**：front matter 必须位于文件开头，由第一行 `---` 与第二段闭合行 `---` 包裹；闭合后空一行再接正文标题。
+2. **冒号后空格**：键值使用 `key: value` 形式，`:` 后必须至少一个空格，例如 `lastReviewedAt: 2026-05-11`，禁止 `key:value`。
+3. **布尔与时间**：布尔使用 JSON 风格小写 `true` / `false`；日期使用 `YYYY-MM-DD` 或 ISO8601 字符串，值前仍须空格。
+4. **字符串**：含 `:`、`#`、`[` 等 YAML 特殊字符时，使用双引号包裹整段字符串。
+5. **缩进**：YAML 块内使用空格缩进，**禁止**使用 Tab 作为缩进字符。
+6. **编码**：文件使用 UTF-8；避免 BOM。
 
-每个键值对必须使用 **`:` + 单个空格** 分隔键与值，即键名后写 `: `（冒号后**必须**有空格）。  
-**禁止**使用 `key:value` 粘连写法（易导致扫描器报错或歧义）。
+## 允许路径
 
-### 3. 日期与时间
+- `{projectRoot}/.ai/**/*.md` 中由 Scan 或 Bootstrap Skill 允许写入的文件。
+- `{skillLibraryRoot}/**/*.md` 中由人类维护的公共文档。
 
-- **建议**：日期类字段使用**引号包裹的字符串**，例如 `lastReviewedAt: "2026-05-11"`，避免实现差异将未加引号的日期解析为日期类型后又序列化不一致。
-- UTC 时间戳（如 `generatedAt`、`linkedAt`、`lastCheck`）在模板中可为 ISO8601 字符串；若存在解析风险，同样建议使用引号：`"2026-05-11T12:00:00Z"`。
+## 禁止路径
 
-### 4. 布尔字段
-
-- `reviewedByHuman` 等必须为 YAML **原生布尔** `true` 或 `false`。
-- **禁止**写成字符串形式的 `"true"` / `"false"` / `"yes"` / `"no"`，以免就绪检查或脚本误判。
-
-### 5. 状态类字段的约定枚举
-
-下列字段取值须与当前 HACF MVP 模板及 Skill 语义一致；**不得**发明未在框架中定义的状态值（若需扩展，应先改模板与本 Rule 再落盘）。
-
-| 字段 | 允许取值 | 说明 |
-|------|----------|------|
-| `language-policy.md`：`status` | `draft`、`active` | 见 `templates/config/language-policy.template.md` 与「Human confirmation」节 |
-| `language-policy.md`：`confidence` | `medium`、`confirmed` | 模板草稿为 `medium`；人工确认后为 `confirmed` |
-| `language-policy.md`：`generatedBy` | `ai`、`ai-assisted` | 见模板与「Human confirmation」节 |
-| `skillkit-status.md`、`readiness.md`：`projectState` | `loaded`、`configuring`、`blocked`、`constraints_ready` | 含义见 `skills/bootstrap/check-project-readiness.md` 与 `skillkit-status` 模板 |
-
-其它文件中的同类字段，以对应模板或维护该文件的 Skill 正文为准；若未定义枚举，使用小写英文 slug 或模板占位符，且仍须满足本节 1–4 条。
-
-### 6. 修改后的校验义务
-
-Agent 在**任意**修改上述文件的 YAML front matter 后，**必须**重新验证该 front matter 片段可被解析（例如用项目或环境内可用的 YAML 加载器对 `---` 之间内容做一次 `safe_load`），确认无报错后再提交或宣称检查通过。
-
-## 禁止事项
-
-- 在 front matter 中使用 Tab 缩进混用不当、未闭合引号、或依赖解析器专有扩展导致可移植性变差。
-- 在明知 YAML 无效的情况下仍写入并依赖后续人工修复（除非 Skill 明确允许「草稿待人类补全」且已在回复中说明风险）。
+- 在 `{skillLibraryRoot}` 写入任何**具体业务项目**的扫描 metadata 或项目私有字段（违反 `public-skill-library-purity-rule`）。
 
 ## 与其它 Rule 的关系
 
-- 与 `language-policy-rule` 互补：后者管自然语言与术语，本条管 **metadata 机器可读性**。
-- 与 `skills/bootstrap/check-project-readiness.md` 中 R6 一致：front matter 无法解析时，视为未满足人工门控或格式未就绪，须按本条修正后再检。
+- 与 `structured-doc-writing-rule` 共同保证文档可解析、可审查。
+- Scan 产出须同时遵守 `source-of-truth-rule`：front matter 不得声称与源码不一致的「事实」。

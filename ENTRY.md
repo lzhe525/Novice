@@ -34,6 +34,10 @@ workspace/
 
 该 Skill 会编排创建或更新 `{projectRoot}/AGENTS.md`，并在 `{projectRoot}/.ai/` 下生成入口、状态与配置的基础结构，然后引导执行就绪检查。
 
+## 第二阶段：AI 扫盘（项目文档）
+
+在 Bootstrap 就绪后，可由 Agent 读取 `{skillLibraryRoot}/routers/SKILL_ROUTER.md` 中 **Scan** 表，按需执行 `skills/scan/` 下 Skill。所有扫盘产出必须写入业务项目的 `.ai/docs/`，**不得**写回公共库。写入前建议阅读 `rules/base/frontmatter-format-rule.md` 与 `rules/documentation/` 下文档类 Rule。
+
 ## 版本信息
 
 公共库版本见同目录下的 [VERSION.md](VERSION.md)，变更记录见 [CHANGELOG.md](CHANGELOG.md)。

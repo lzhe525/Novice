@@ -28,12 +28,19 @@ generatedAt: {{GENERATED_AT_ISO}}
 | Skill 路由表 | `routers/SKILL_ROUTER.md` |
 | 基础 Rule | `rules/base/public-skill-library-purity-rule.md` 等 |
 | Markdown front matter 格式 | `rules/base/frontmatter-format-rule.md` |
+| 项目级扫盘 | `skills/scan/scan-project-by-ai.md` |
+| 项目 Adapter | `skills/scan/generate-project-adapter-by-ai.md` |
+| 模块扫盘 | `skills/scan/scan-module-by-ai.md` |
+| 单文件扫盘 | `skills/scan/scan-file-by-ai.md` |
+| 文档结构化 | `rules/documentation/structured-doc-writing-rule.md` |
 
 ## 变量约定
 
 - `{projectRoot}`：含本文件的项目根目录（`AI_ENTRY.md` 位于 `{projectRoot}/.ai/entry/`）。
 - `{skillLibraryRoot}`：由 `SKILLKIT_LINK.md` 中 `skillLibraryRootRelative` 解析得到的公共库根目录。
 
-## MVP 范围提示
+## 能力范围提示
 
-当前阶段仅保证 Bootstrap 目录结构与语言策略配置；**未**启用扫盘、Pattern、Placement 等 Skill。若任务需要这些能力，应停止并提示框架版本限制。
+- **Bootstrap**：`.ai/entry`、`state`、`config` 与根目录 `AGENTS.md` 由 Bootstrap 系列 Skill 维护；就绪检查仍以 `check-project-readiness` 为准。
+- **扫盘（第二阶段）**：公共库提供 `skills/scan/` 下 Skill；**所有**生成文档仅可写入 `{projectRoot}/.ai/docs/**`。**源码为事实源**，文档为辅助上下文。
+- **未提供**：Pattern、Placement、`develop`、`review`、框架升级等 Skill；若任务需要，请使用项目本地 Skill 或等待后续公共库版本。
