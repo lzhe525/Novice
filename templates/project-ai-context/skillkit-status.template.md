@@ -17,6 +17,8 @@ lastCheck: "{{GENERATED_AT_ISO}}"
 | `linkedAt` | 最近一次成功完成 `load-skill-library` 或链接校验的 UTC ISO8601 时间。 |
 | `projectState` | MVP 建议取值：`loaded`、`configuring`、`blocked`（语言策略未人工确认等）。 |
 | `lastCheck` | 最近一次执行 `check-project-readiness` 的时间。 |
+| `localizationLevel` | **可选**（由 `skills/state/evaluate-localization-level.md` 写入）：`L0`～`L3`，表示项目 AI 协作本地化程度。 |
+| `localizationEvaluatedAt` | **可选**：最近一次执行 `evaluate-localization-level` 的 UTC ISO8601 时间。 |
 
 ## 人工可读摘要
 

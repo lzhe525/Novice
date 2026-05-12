@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.3]
+
+- Pattern 第三阶段扩展：`skills/pattern/extract-code-pattern.md`（从样例抽象 Pack 四文件）；`create-code-by-pattern.md`（受控改源码）；`review-pattern-code-generation.md`；`promote-project-local-skill.md`、`activate-project-local-skill.md`（项目本地 Skill 草稿与激活）。
+- 新增 **Health**：`skills/health/check-project-ai-health.md`；`rules/health/project-ai-health-rule.md`；模板 `templates/reports/project-ai-health-report.template.md`、`templates/state/project-ai-health-status.template.md`。
+- 新增 **Bootstrap 引导式接入**：`skills/bootstrap/guide-project-onboarding.md`、`recommend-next-onboarding-step.md`；`rules/bootstrap/onboarding-stepwise-rule.md`、`onboarding-human-confirmation-rule.md`；模板 `templates/state/onboarding-status.template.md`、`onboarding-checklist.template.md`、`onboarding-questions.template.md`。
+- 新增 **State**：`skills/state/evaluate-localization-level.md`；`templates/project-ai-context/skillkit-status.template.md` 增加 `localizationLevel` / `localizationEvaluatedAt` 字段说明。
+- 更新 `routers/SKILL_ROUTER.md`、`rules/base/project-local-output-rule.md`（接入、健康检查、Pattern 生成/复盘、项目本地 Skill、本地化评估等写入路径）。
+
 ## [0.2.2]
 
 - 新增第三阶段 Pattern：`skills/pattern/validate-pattern-pack.md`，校验 `.ai/pattern-packs/{codeTypeId}/` 四文件结构与合规性；产出 `.ai/state/pattern-validation-status.md`、`.ai/reports/pattern-validation-report.md`。
