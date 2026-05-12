@@ -25,6 +25,11 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 - `{projectRoot}/.ai/indexes/**` 下索引类 Markdown（例如 `scan-project-by-ai` 生成的 `module-index.md`、`directory-index.md`、`file-index.md`；`scan-module-by-ai` 可合并更新上述索引）；
 - `{projectRoot}/.ai/state/scan-status.md`（项目级扫盘状态，由 `scan-project-by-ai` 维护）。
 
+**Pattern Pack 校验（第三阶段）**在仅执行 `skills/pattern/validate-pattern-pack.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/state/pattern-validation-status.md`
+- `{projectRoot}/.ai/reports/pattern-validation-report.md`（可自动创建 `.ai/reports/` 目录）
+
 **不得**在 `.ai/` 外散落上述扫盘产物。
 
 不在上列且非用户显式要求的源码修改，**不得**新建。
@@ -32,7 +37,7 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 ## 禁止事项
 
 - 以「方便 Agent」为由在 `{projectRoot}` 根或 `src/` 下新增与上表同类的协作文档。
-- 在未引入对应 Skill 前创建 `.ai/reports/` 等目录并批量写入（本阶段未提供报告类生成 Skill）。
+- 在未引入对应 Skill 前创建 `.ai/reports/` 并写入报告；**例外**：已引入 `validate-pattern-pack` 时，仅允许写入该 Skill 明示的 `pattern-validation-report.md`。
 
 ## 与其它 Rule 的关系
 

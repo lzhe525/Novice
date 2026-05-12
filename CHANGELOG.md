@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2]
+
+- 新增第三阶段 Pattern：`skills/pattern/validate-pattern-pack.md`，校验 `.ai/pattern-packs/{codeTypeId}/` 四文件结构与合规性；产出 `.ai/state/pattern-validation-status.md`、`.ai/reports/pattern-validation-report.md`。
+- 新增 `rules/pattern/pattern-validation-rule.md`；模板 `templates/state/pattern-validation-status.template.md`、`templates/reports/pattern-validation-report.template.md`。
+- 更新 `routers/SKILL_ROUTER.md`、`rules/base/project-local-output-rule.md`（允许本 Skill 写入上述报告与状态路径）。
+
 ## [0.2.1]
 
 - 自检补强第二阶段 Scan：`scan-project-by-ai` 现产出 `deep-dive.md`、`indexes/module-index.md`、`state/scan-status.md`；`scan-module-by-ai` 产出五件套文档；`scan-file-by-ai` 区分 `normal` / `critical`；`generate-project-adapter-by-ai` 增加 `adapter-evidence.md`。
