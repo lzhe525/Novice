@@ -30,6 +30,12 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 - `{projectRoot}/.ai/state/pattern-validation-status.md`
 - `{projectRoot}/.ai/reports/pattern-validation-report.md`（可自动创建 `.ai/reports/` 目录）
 
+**Pattern 受控代码生成（第三阶段）**在仅执行 `skills/pattern/create-code-by-pattern.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/reports/pattern-code-generation-plan.md`
+- `{projectRoot}/.ai/reports/pattern-code-generation-result.md`
+- `{projectRoot}/.ai/state/pattern-code-generation-status.md`
+
 **不得**在 `.ai/` 外散落上述扫盘产物。
 
 不在上列且非用户显式要求的源码修改，**不得**新建。
@@ -37,7 +43,7 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 ## 禁止事项
 
 - 以「方便 Agent」为由在 `{projectRoot}` 根或 `src/` 下新增与上表同类的协作文档。
-- 在未引入对应 Skill 前创建 `.ai/reports/` 并写入报告；**例外**：已引入 `validate-pattern-pack` 时，仅允许写入该 Skill 明示的 `pattern-validation-report.md`。
+- 在未引入对应 Skill 前创建 `.ai/reports/` 并写入报告；**例外**：已引入 `validate-pattern-pack` 时，仅允许写入该 Skill 明示的 `pattern-validation-report.md`；已引入 `create-code-by-pattern` 时，仅允许写入该 Skill 明示的 `pattern-code-generation-plan.md` 与 `pattern-code-generation-result.md`。
 
 ## 与其它 Rule 的关系
 
