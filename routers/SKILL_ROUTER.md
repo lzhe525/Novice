@@ -38,6 +38,15 @@
 | 将稳定可重复的 Pattern 生成流程沉淀为项目本地 Skill 草稿 | `skills/pattern/promote-project-local-skill.md` | 写入 `.ai/skills/project-local/create-{codeTypeId}.md`（**初始** `status: draft`）与 `.ai/state/project-local-skill-promotion-status.md` |
 | 人类确认后激活项目本地 Skill 并维护索引 | `skills/pattern/activate-project-local-skill.md` | 合并 `create-{codeTypeId}.md` front matter 为 `active`；更新 `.ai/indexes/skill-index.md` |
 
+## Docs（文档影响与同步）
+
+| 任务意图（中文） | Skill 路径 | 说明 |
+|------------------|------------|------|
+| 代码变更后只读判断对 `.ai/` 文档、索引、Pattern Pack、项目本地 Skill 的影响并产出报告与状态 | `skills/docs/check-doc-impact-after-change.md` | 读取变更报告（优先 Pattern 三件套等）、只读变更文件与相关 `.ai/` 产物；**仅**写入 `.ai/reports/doc-impact-report.md`、`.ai/state/doc-impact-status.md`；**不**改源码、**不**直接改其它文档 |
+| 依据 `doc-impact-report` 中的建议清单定点更新 `.ai/` 内文档（不含业务源码与公共库） | `skills/docs/update-docs-after-change.md` | **须**在 `check-doc-impact-after-change` 之后或已有有效报告时执行；**仅**更新清单列出的 `.ai/docs/**`、`.ai/indexes/**`、`.ai/pattern-packs/**`、`.ai/skills/project-local/**` 及 `doc-impact-status.md`；禁止全量重扫式重写；`uncertain` 项默认跳过 |
+
+建议在 `create-code-by-pattern` 改码并落盘结果后编排：**先** `check-doc-impact-after-change`，**再**按需 `update-docs-after-change`。
+
 ## Health
 
 | 任务意图（中文） | Skill 路径 | 说明 |

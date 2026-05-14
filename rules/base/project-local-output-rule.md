@@ -66,6 +66,16 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 - `{projectRoot}/.ai/reports/project-ai-health-report.md`（可自动创建 `.ai/reports/` 目录）
 - `{projectRoot}/.ai/state/project-ai-health-status.md`
 
+**代码变更后文档影响检查**在仅执行 `skills/docs/check-doc-impact-after-change.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/reports/doc-impact-report.md`（可自动创建 `.ai/reports/` 目录）
+- `{projectRoot}/.ai/state/doc-impact-status.md`
+
+**代码变更后文档同步**在仅执行 `skills/docs/update-docs-after-change.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/state/doc-impact-status.md`
+- `{projectRoot}/.ai/docs/**`、`{projectRoot}/.ai/indexes/**`、`{projectRoot}/.ai/pattern-packs/**`、`{projectRoot}/.ai/skills/project-local/**` 下的 Markdown，**仅当**该相对路径已列入执行时所依据的 `{projectRoot}/.ai/reports/doc-impact-report.md` 正文「建议更新清单」表格（或该 Skill 认可的等价结构化列表）且变更类型符合 `doc-update-policy-rule`；**不得**据此 Skill 写入未列入清单的路径。
+
 **不得**在 `.ai/` 外散落上述扫盘产物。
 
 不在上列且非用户显式要求的源码修改，**不得**新建。
@@ -73,7 +83,7 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 ## 禁止事项
 
 - 以「方便 Agent」为由在 `{projectRoot}` 根或 `src/` 下新增与上表同类的协作文档。
-- 在未引入对应 Skill 前创建 `.ai/reports/` 并写入报告；**例外**：已引入 `validate-pattern-pack` 时，仅允许写入该 Skill 明示的 `pattern-validation-report.md`；已引入 `create-code-by-pattern` 时，仅允许写入该 Skill 明示的 `pattern-code-generation-plan.md` 与 `pattern-code-generation-result.md`；已引入 `review-pattern-code-generation` 时，仅允许写入该 Skill 明示的 `pattern-code-generation-review.md`；已引入 `check-project-ai-health` 时，仅允许写入该 Skill 明示的 `project-ai-health-report.md`。
+- 在未引入对应 Skill 前创建 `.ai/reports/` 并写入报告；**例外**：已引入 `validate-pattern-pack` 时，仅允许写入该 Skill 明示的 `pattern-validation-report.md`；已引入 `create-code-by-pattern` 时，仅允许写入该 Skill 明示的 `pattern-code-generation-plan.md` 与 `pattern-code-generation-result.md`；已引入 `review-pattern-code-generation` 时，仅允许写入该 Skill 明示的 `pattern-code-generation-review.md`；已引入 `check-project-ai-health` 时，仅允许写入该 Skill 明示的 `project-ai-health-report.md`；已引入 `check-doc-impact-after-change` 时，仅允许写入该 Skill 明示的 `doc-impact-report.md`。
 
 ## 与其它 Rule 的关系
 
