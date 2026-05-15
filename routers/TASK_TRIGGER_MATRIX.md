@@ -19,7 +19,7 @@
 | 拷问、对齐、压力测试方案、术语模糊、需求不清、业务规则不完整、设计拷问 | `skills/docs/grill-with-project-docs.md` | available | must_invoke | 若文件缺失或 metadata 不满足：预检 `config_error`，建议执行 `validate-skill-routing`；**不**编造 Skill 步骤 |
 | 交接、handoff、切换 Agent、会话总结、下一 Agent 续写、固化上下文 | `skills/productivity/create-agent-handoff.md` | available | must_invoke | 同上 |
 | Pattern 生成、按 Pattern 改码、同类代码生成、`codeTypeId` 实现 | `skills/pattern/create-code-by-pattern.md` | available | must_invoke | 同上；项目本地 `create-{codeTypeId}.md` 且 skill-index `active` 时优先本地路径 |
-| 改码后文档影响、文档是否需同步、doc impact、变更后文档判断 | `skills/docs/check-doc-impact-after-change.md` | available | must_invoke | 同上 |
+| 正式文档影响报告、运行 doc impact、生成 `doc-impact-report`、执行 `check-doc-impact-after-change` | `skills/docs/check-doc-impact-after-change.md` | available | must_invoke | 同上；普通改码前的文档同步预判属于建议门禁，按 `doc-impact-after-code-change-rule` 口述或写入计划，不因此强制调用本 Skill |
 
 ---
 

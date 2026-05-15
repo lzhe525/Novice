@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.7]
+
+- 调整文档同步门禁为**建议式执行前预判**：Agent 在落码前判断六类 `.ai/` 产物是否预计受影响；`check-doc-impact-after-change` 作为正式报告加强动作，仅在显式要求、影响明显或不确定时执行。
+
 ## [0.2.6]
 
 - 新增 **Skill 路由体系**：`skills/router/select-skill-for-task.md`（任务预检编排）、`validate-skill-routing.md`、`register-new-skill.md`；`routers/TASK_TRIGGER_MATRIX.md`（Available / Planned 信号矩阵）。

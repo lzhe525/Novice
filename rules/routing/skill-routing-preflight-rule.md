@@ -34,4 +34,4 @@
 ## 与其它 Rule 的关系
 
 - 与 `agent-default-entry-rule` 互补：极薄入口指向 `AI_ENTRY.md`，本规则约束任务开始后的第一层协作决策。
-- 与 `doc-impact-after-code-change-rule` 衔接：改码后文档影响判断仍由 `check-doc-impact-after-change` 执行，但进入该 Skill 前仍须完成预检（若任务类型属于本规则适用范围）。
+- 与 `doc-impact-after-code-change-rule` 衔接：普通改码任务在确定修改方案后、正式写入源码前须做文档同步影响预判；该预判不等于必须调用 `check-doc-impact-after-change`。仅当用户显式要求正式报告，或 Agent 判断需要结构化加强检查时，才按本预检流程路由并读取该 Skill。

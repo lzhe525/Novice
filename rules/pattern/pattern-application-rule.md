@@ -38,7 +38,8 @@
 
 11. **不得**向 `{skillLibraryRoot}/**` 写入项目私有内容或生成结果。  
 12. **不得**在 `.ai/` 外创建 AI 协作文档（落实 `project-local-output-rule`）。  
-13. 若变更可能导致 `.ai/docs/**` 与源码不同步：仅在结果报告与回复中**提示**人类是否更新文档；**不得**在无单独任务授权时自动大范围改写模块/项目文档。
+13. **文档同步影响预判**：在生成计划后、实际应用源码前，Agent 必须按 `doc-impact-after-code-change-rule` 做轻量预判，并写入计划或回复；预判至少覆盖 `.ai/docs/project/**`、`.ai/docs/modules/**`、`.ai/docs/files/**`、`.ai/indexes/**`、`.ai/pattern-packs/**`、`.ai/skills/project-local/**` 六类对象。
+14. 若预判或实际改动表明 `.ai/docs/**` 等协作文档可能与源码不同步：Agent 可在结果报告与回复中建议轻量同步、标记过期，或运行 `check-doc-impact-after-change` 生成正式报告；**不得**在无单独任务授权时自动大范围改写模块/项目文档。
 
 ## 须同时遵守的其它 Rule
 
@@ -46,6 +47,7 @@
 - `rules/base/source-of-truth-rule.md`
 - `rules/base/public-skill-library-purity-rule.md`
 - `rules/base/project-local-output-rule.md`
+- `rules/documentation/doc-impact-after-code-change-rule.md`
 - `rules/documentation/agent-context-budget-rule.md`
 
 ## 与其它 Rule 的关系

@@ -2,7 +2,7 @@
 
 > 项目名称：HACF — Human-AI Collaboration Framework  
 > 中文名：人类与 AI 协作框架  
-> 当前版本：0.2.3（`bootstrap-mvp+scan+pattern+health-onboarding`）  
+> 当前版本：0.2.7（`bootstrap-mvp+scan+pattern+health-onboarding+productivity-grill+version-compat-local-upgrade+skill-routing+doc-sync-precheck`）
 > 当前定位：Agent-first 公共 Skill 文档库  
 > 推荐使用环境：Cursor、Codex、Claude Code 或其他可读取项目文件的 Agent  
 > 推荐文档语言：中文为主，代码路径、类名、方法名、配置名、Skill 名称保持原文
@@ -178,7 +178,7 @@ workspace/
 
 ### 4.2 HACF 公共库目录
 
-当前 0.2.3 仓库结构：
+当前 0.2.7 仓库结构：
 
 ```text
 HACF/
@@ -306,7 +306,7 @@ HACF/
 
 ## 5. 当前主干能力
 
-当前 HACF 0.2.3 主干能力分为五类：Bootstrap、Scan、Pattern、State / 本地化、Health。
+当前 HACF 0.2.7 主干能力分为六类：Bootstrap、Scan、Pattern、Docs、State / 本地化、Health。
 
 ### 5.1 Bootstrap：项目接入
 
@@ -824,7 +824,8 @@ critical
 4. 必须读取 Pattern Pack 四文件。
 5. 必须读取 validator.md。
 6. 必须读取真实源码和联动文件。
-7. 如果信息不足，列出缺失项，不要猜。
+7. 在计划中加入执行前“文档同步预判”，覆盖项目文档、模块文档、文件文档、索引、Pattern Pack、项目本地 Skill 六类对象。
+8. 如果信息不足，列出缺失项，不要猜。
 ```
 
 预期产出：
@@ -853,7 +854,8 @@ critical
 2. 等我明确回复“确认执行”后再修改源码。
 3. 修改范围必须严格限制在计划内。
 4. 修改后执行 validator.md checklist。
-5. 输出结果报告。
+5. 若实际改动范围超出计划中的文档同步预判，重新说明是否建议同步文档或运行 doc-impact 正式检查。
+6. 输出结果报告。
 ```
 
 预期产出：

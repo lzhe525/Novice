@@ -28,7 +28,7 @@
 | 测试方案、补测试、行为测试计划 | `skills/testing/plan-behavior-tests.md` | §2 Planned | `suggest_fallback` |
 | 会话交接、切换 Agent、总结上下文、handoff | `skills/productivity/create-agent-handoff.md` | §1 Available | `must_invoke` |
 | 基于 Pattern 生成代码、按 Pattern 改码、`codeTypeId` 同类实现 | `skills/pattern/create-code-by-pattern.md` | §1 Available | `must_invoke` |
-| 代码修改后判断文档是否需同步、文档影响评估 | `skills/docs/check-doc-impact-after-change.md` | §1 Available | `must_invoke` |
+| 正式文档影响报告、运行 doc impact、生成 `doc-impact-report`、执行 `check-doc-impact-after-change` | `skills/docs/check-doc-impact-after-change.md` | §1 Available | `must_invoke` |
 
 ### 项目本地覆盖
 
@@ -40,7 +40,7 @@
 ### 多信号冲突
 
 1. 项目本地 Skill > 公共 Skill。
-2. 更具体意图 > 更泛化意图（例：`改码后文档影响` > `文档拷问`）。
+2. 更具体意图 > 更泛化意图（例：`生成 doc-impact-report` > `文档拷问`）。
 3. 若仍冲突，在预检输出 `evidence` 中列出全部命中信号，并选择 **对用户目标最直接** 的一项；必要时向用户确认一项。
 
 ### 配置错误
@@ -54,6 +54,7 @@
 
 - 对 §2 Planned 行使用 `must_invoke`。
 - 在文件不存在时假装「已读 Skill」。
+- 将普通代码修改前的文档同步预判升级为强制调用 `check-doc-impact-after-change`；预判义务由 `doc-impact-after-code-change-rule` 约束，正式报告仅在显式意图或 Agent 判断需要加强时调用。
 - 将本表复制进业务项目 `.ai/` 作为 override（应始终回读公共库 Matrix）。
 
 ## 与其它 Rule 的关系

@@ -1,22 +1,24 @@
 ---
 status: active
 routeEnabled: true
-description: 改码后只读判断对 .ai/ 文档体系的影响。
+description: 生成正式 doc-impact 报告，只读判断对 .ai/ 文档体系的影响。
 triggerWhen:
-  - 改码后文档影响
+  - 正式文档影响报告
   - doc impact
-  - 文档是否需同步
+  - 生成 doc-impact-report
+  - check-doc-impact-after-change
 ---
 # Skill：check-doc-impact-after-change
 
 ## 1. 目的
 
-在**不修改业务源码、不直接更新** `.ai/docs/**`、`.ai/indexes/**`、`.ai/pattern-packs/**`、`.ai/skills/project-local/**`（除本 Skill 明示的两份产出外）、**不修改公共 HACF Skill 库**的前提下，基于**代码变更报告与只读证据**，判断本轮变更对项目内 `.ai/` 文档体系的影响，并将结论写入 `.ai/reports/doc-impact-report.md` 与 `.ai/state/doc-impact-status.md`。
+在**不修改业务源码、不直接更新** `.ai/docs/**`、`.ai/indexes/**`、`.ai/pattern-packs/**`、`.ai/skills/project-local/**`（除本 Skill 明示的两份产出外）、**不修改公共 HACF Skill 库**的前提下，基于**代码变更报告与只读证据**，为一次已发生或已落盘的代码变更生成正式文档影响报告，并将结论写入 `.ai/reports/doc-impact-report.md` 与 `.ai/state/doc-impact-status.md`。
 
 ## 2. 适用场景
 
-- 已完成或并行存在 `create-code-by-pattern` 落盘产物（计划 / 结果 / 状态三件套），需在改码后评估文档与索引是否跟进。
-- 任意业务代码变更后，人类或编排希望在进入 `update-docs-after-change` 之前获得**结构化、可追溯**的影响判断。
+- 已完成或并行存在 `create-code-by-pattern` 落盘产物（计划 / 结果 / 状态三件套），且执行前预判或实际改动显示文档与索引可能需要跟进。
+- 轻量文档同步预判认为影响明显、范围较大或存在不确定项，人类或编排希望在进入 `update-docs-after-change` 之前获得**结构化、可追溯**的影响判断。
+- 用户明确要求运行 `check-doc-impact-after-change`、生成 `doc-impact-report.md` 或执行正式 doc impact 检查。
 - 需区分 **P1 强证据**（Pattern 三件套等）与 **P3 弱证据**（仅 git 路径），并显式列出**不确定项**。
 
 ## 3. 输入

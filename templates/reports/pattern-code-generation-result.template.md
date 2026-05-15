@@ -43,9 +43,9 @@ sourceOfTruth: repository
 |----|------|------|
 | | | |
 
-## 文档更新提示
+## 文档同步判断
 
-<!-- 是否建议更新 `.ai/docs/modules/...` 或 `indexes`；无则写「无」 -->
+<!-- 复述计划阶段预判；若实际改动范围超出预判，说明是否建议轻量同步、标记过期或运行 check-doc-impact-after-change -->
 
 {{DOCS_UPDATE_HINT}}
 

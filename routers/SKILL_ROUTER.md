@@ -74,11 +74,11 @@
 
 | 任务意图（中文） | Skill 路径 | 说明 |
 |------------------|------------|------|
-| 代码变更后只读判断对 `.ai/` 文档、索引、Pattern Pack、项目本地 Skill 的影响并产出报告与状态 | `skills/docs/check-doc-impact-after-change.md` | 读取变更报告（优先 Pattern 三件套等）、只读变更文件与相关 `.ai/` 产物；**仅**写入 `.ai/reports/doc-impact-report.md`、`.ai/state/doc-impact-status.md`；**不**改源码、**不**直接改其它文档 |
+| 正式判断代码变更对 `.ai/` 文档、索引、Pattern Pack、项目本地 Skill 的影响并产出报告与状态 | `skills/docs/check-doc-impact-after-change.md` | 用于显式要求正式报告、Agent 预判影响明显或不确定时；读取变更报告（优先 Pattern 三件套等）、只读变更文件与相关 `.ai/` 产物；**仅**写入 `.ai/reports/doc-impact-report.md`、`.ai/state/doc-impact-status.md`；**不**改源码、**不**直接改其它文档 |
 | 依据 `doc-impact-report` 中的建议清单定点更新 `.ai/` 内文档（不含业务源码与公共库） | `skills/docs/update-docs-after-change.md` | **须**在 `check-doc-impact-after-change` 之后或已有有效报告时执行；**仅**更新清单列出的 `.ai/docs/**`、`.ai/indexes/**`、`.ai/pattern-packs/**`、`.ai/skills/project-local/**` 及 `doc-impact-status.md`；禁止全量重扫式重写；`uncertain` 项默认跳过 |
 | 对照 `.ai` 文档与索引拷问、对齐方案；可选将纪要写入 `design-grill-notes.md` | `skills/docs/grill-with-project-docs.md` | 单问单答；默认对话产出；**仅**在用户明确要求固化时写入 `.ai/docs/project/design-grill-notes.md`；不改业务源码与扫盘主文档全文 |
 
-建议在 `create-code-by-pattern` 改码并落盘结果后编排：**先** `check-doc-impact-after-change`，**再**按需 `update-docs-after-change`。
+普通改码流程采用建议门禁：Agent 在确定修改方案后、正式写入源码前先做文档同步影响预判；若预判或实际结果显示影响明显、范围较大或存在不确定项，再编排 `check-doc-impact-after-change`，之后按需 `update-docs-after-change`。
 
 ## Productivity
 

@@ -50,7 +50,8 @@ triggerWhen:
 - 可读权威 Rule：  
   `{skillLibraryRoot}/rules/pattern/pattern-application-rule.md`、  
   `{skillLibraryRoot}/rules/pattern/pattern-generated-code-validation-rule.md`、  
-  `{skillLibraryRoot}/rules/pattern/pattern-apply-confirmation-rule.md`。
+  `{skillLibraryRoot}/rules/pattern/pattern-apply-confirmation-rule.md`、
+  `{skillLibraryRoot}/rules/documentation/doc-impact-after-code-change-rule.md`。
 - 建议只读加载：  
   `{skillLibraryRoot}/rules/base/frontmatter-format-rule.md`、  
   `{skillLibraryRoot}/rules/base/source-of-truth-rule.md`、  
@@ -89,17 +90,18 @@ triggerWhen:
    `.ai/docs/modules/{moduleId}/change-guide.md`、  
    `.ai/docs/modules/{moduleId}/risk-points.md`；缺失则记入计划「缺口」，不虚构。  
 11. **收集联动源码路径**（来自 Pack 四文件正文，上限 **40** 条候选），并对**计划将修改或新建**的每个路径在 `{projectRoot}` 下实读或确认不存在；**禁止只根据 Pattern 文档修改代码**，源码为事实源。  
-12. **生成变更计划**：用计划模板实例化并**覆盖写入** `reports/pattern-code-generation-plan.md`（占位符含 `{{CODE_TYPE_ID}}`、`{{MODULE_ID}}`、`{{MODE}}`、`{{PLAN_GENERATED_AT_ISO}}`、`{{USER_REQUIREMENT_SUMMARY}}`、`{{GATE_SUMMARY}}` 等）。  
-13. 若 `{mode}` 为 **`plan-only`**：写入 `reports/pattern-code-generation-result.md`（标明未应用源码）、`state/pattern-code-generation-status.md`（如 `overallStatus: planned`）；**结束**，不改源码。  
-14. 若 `{mode}` 为 **`apply-after-confirmation`**：  
+12. **执行前文档同步影响预判**：基于拟变更文件清单与模块上下文，按 `doc-impact-after-code-change-rule` 对六类对象给出「不影响 / 可能影响 / 需要同步 / 不确定」判断，并将摘要写入计划的「文档同步预判」小节；本步骤不要求运行 `check-doc-impact-after-change`、不写 `doc-impact-report.md`。
+13. **生成变更计划**：用计划模板实例化并**覆盖写入** `reports/pattern-code-generation-plan.md`（占位符含 `{{CODE_TYPE_ID}}`、`{{MODULE_ID}}`、`{{MODE}}`、`{{PLAN_GENERATED_AT_ISO}}`、`{{USER_REQUIREMENT_SUMMARY}}`、`{{GATE_SUMMARY}}`、`{{DOC_SYNC_PRECHECK}}` 等）。
+14. 若 `{mode}` 为 **`plan-only`**：写入 `reports/pattern-code-generation-result.md`（标明未应用源码）、`state/pattern-code-generation-status.md`（如 `overallStatus: planned`）；**结束**，不改源码。
+15. 若 `{mode}` 为 **`apply-after-confirmation`**：
     - 校验 `{planApplyConfirmation}` 符合 `pattern-apply-confirmation-rule.md`；  
     - 再确认前述允许改源码的门禁均已满足（含 `pattern-index` 存在、Pack 四文件 **active**、`projectState` 未按 Rule 禁止 apply 等）；  
     - 全部通过则**仅**按计划清单修改 Pattern 已声明范围内的源码；  
     - **禁止**修改 Pattern 未声明的无关文件、禁止写入 `{skillLibraryRoot}`、禁止未经确认的高风险文件（见 `pattern-application-rule`）。  
-15. 若已修改源码：**必须**按 `validator.md` 正文清单逐项执行，并按 `pattern-generated-code-validation-rule.md` 记入结果报告。  
-16. **必须**写入 `reports/pattern-code-generation-result.md`。  
-17. **必须**更新 `state/pattern-code-generation-status.md`。  
-18. 若代码结构变化可能影响 `.ai/docs/**`：**仅在**对话与结果报告中提示是否需要更新文档；**不要**自动大范围更新 `.ai/docs/`。
+16. 若已修改源码：**必须**按 `validator.md` 正文清单逐项执行，并按 `pattern-generated-code-validation-rule.md` 记入结果报告。
+17. **必须**写入 `reports/pattern-code-generation-result.md`；若实际触及范围超出计划预判，须在「文档同步判断」中重新说明并建议运行 `check-doc-impact-after-change`。
+18. **必须**更新 `state/pattern-code-generation-status.md`。
+19. 若代码结构变化可能影响 `.ai/docs/**`：可在对话与结果报告中建议轻量同步、标记过期或运行 `check-doc-impact-after-change`；**不要**自动大范围更新 `.ai/docs/`。
 
 ## 8. 读取范围
 
@@ -120,6 +122,7 @@ triggerWhen:
 | `.ai/docs/modules/{moduleId}/risk-points.md` | 风险点。 |
 | 计划将触及的**业务源码**路径 | 须在编辑前逐路径实读。 |
 | `{skillLibraryRoot}/rules/pattern/pattern-application-rule.md` 等 | 见 §5。 |
+| `{skillLibraryRoot}/rules/documentation/doc-impact-after-code-change-rule.md` | 执行前文档同步影响预判。 |
 | `{skillLibraryRoot}/templates/reports/pattern-code-generation-plan.template.md` 等 | 见 §4。 |
 
 ## 9. 写入位置
@@ -137,7 +140,7 @@ triggerWhen:
 | 修改 Pattern **未声明**的无关业务文件 |
 | 在 `.ai/` **外**创建 AI 协作文档（`AGENTS.md` 除外的人类显式任务） |
 | **未经确认**的高风险文件（见 `pattern-application-rule`） |
-| 自动大范围更新 `.ai/docs/**`（仅允许提示） |
+| 自动大范围更新 `.ai/docs/**`（仅允许预判、提示或在单独授权下执行同步 Skill） |
 
 ## 10. 禁止事项
 
@@ -162,6 +165,7 @@ triggerWhen:
 - [ ] 已读取 `pattern-index.md` 与 `code-type-index.md`，缺失按规则落盘 **blocked** 语义。  
 - [ ] 已确认 `pattern-packs/{codeTypeId}/` 存在且四文件为 **active** 协作态。  
 - [ ] 已读取 Pack 四文件与模块四文档；已实读将修改的源码路径。  
+- [ ] 已在落码前完成文档同步影响预判，并写入计划或回复。
 - [ ] `pattern-code-generation-plan.md` 已写入。  
 - [ ] `plan-only` 下未改业务源码；`apply-after-confirmation` 下仅在确认与门禁通过后改声明范围内源码。  
 - [ ] 若已改码：已执行 `validator.md` 清单并写入结果表。  
