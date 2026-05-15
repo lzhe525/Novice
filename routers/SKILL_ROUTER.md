@@ -6,11 +6,11 @@
 
 ## Router / 预检
 
-任务开始前（代码理解/修改、调试、规划、测试、文档、Pattern、项目本地 Skill 相关），Agent **须**先完成 Skill 路由预检：
+任务开始前（代码理解/修改、调试、规划、测试、文档、Pattern、项目本地 Skill 相关），Agent **须**先完成 Skill 路由预检。预检包含两部分：先按 `check-hacf-version-compatibility` 口径做版本兼容判定（`up_to_date` 仅提醒且不写 `hacf-version-status.md`，非一致状态才写入并提醒），再做 Skill 路由决策；版本状态不阻断路由且不自动升级。
 
 | 用途 | 相对路径 |
 |------|----------|
-| 任务 Skill 路由预检（编排） | `skills/router/select-skill-for-task.md` |
+| 任务 Skill 路由预检（版本提醒 + 路由编排） | `skills/router/select-skill-for-task.md` |
 | 任务信号 → Skill / fallback | `routers/TASK_TRIGGER_MATRIX.md` |
 | 预检义务 Rule | `rules/routing/skill-routing-preflight-rule.md` |
 | 强制触发级别 Rule | `rules/routing/mandatory-skill-trigger-rule.md` |
@@ -22,7 +22,7 @@
 
 仅 `TASK_TRIGGER_MATRIX` **Available**（`status: available`）且 Skill 文件存在、`status: active`、`routeEnabled: true` 时 **必须先读 Skill 再执行**；**Planned** 仅执行 fallback，**不得**强制读取不存在的 Skill。
 
-可选预检状态：`{projectRoot}/.ai/state/last-skill-routing.md`。
+可选预检状态：`{projectRoot}/.ai/state/last-skill-routing.md`。版本不一致或无法确认一致时，预检还会写入或覆盖 `{projectRoot}/.ai/state/hacf-version-status.md`；版本一致时不因预检刷新该文件。
 
 ## Router（路由维护）
 

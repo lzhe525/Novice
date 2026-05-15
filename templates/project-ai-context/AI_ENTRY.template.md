@@ -11,7 +11,7 @@ generatedAt: {{GENERATED_AT_ISO}}
 
 1. 本文件（当前页）
 2. 同目录 `SKILLKIT_LINK.md`（解析 `{skillLibraryRoot}`）
-3. **任务开始前**：公共库 `skills/router/select-skill-for-task.md`（Skill 路由预检；可选写入 `../state/last-skill-routing.md`）
+3. **任务开始前**：公共库 `skills/router/select-skill-for-task.md`（版本兼容提醒 + Skill 路由预检；可选写入 `../state/last-skill-routing.md`；版本非一致时写入 `../state/hacf-version-status.md`）
 4. `../config/language-policy.md`（语言策略；须人工确认后 `reviewedByHuman: true`）
 5. `../state/readiness.md`（就绪检查结果）
 6. `../state/skillkit-status.md`（库版本与状态摘要）
@@ -50,10 +50,11 @@ generatedAt: {{GENERATED_AT_ISO}}
 ## Skill 路由预检
 
 - 涉及代码理解/修改、调试、规划、测试、文档、Pattern、项目本地 Skill 的任务，**须**先执行公共库 `skills/router/select-skill-for-task.md`。
+- 该预检先做版本兼容判定，再做 Skill 路由决策：`up_to_date` 仅提醒且不写 `../state/hacf-version-status.md`；非 `up_to_date` 时写入或覆盖该状态文件并提醒用户按需执行 `skills/bootstrap/plan-hacf-local-upgrade.md`。版本提醒不阻断路由，不自动执行升级。
 - 路由优先级：`.ai/indexes/skill-index.md` → `.ai/skills/project-local/` → `.ai/indexes/pattern-index.md` → `.ai/indexes/code-type-index.md` → `routers/SKILL_ROUTER.md` → `routers/TASK_TRIGGER_MATRIX.md`。
 - `TASK_TRIGGER_MATRIX` §1（`available`）且 Skill 文件存在：**必须先读 Skill 再执行**。
 - `TASK_TRIGGER_MATRIX` §2（`planned`）：**仅**执行表中 fallback，**不得**强制读取不存在的 Skill。
-- 可选状态：`../state/last-skill-routing.md`。
+- 可选状态：`../state/last-skill-routing.md`；版本非一致状态：`../state/hacf-version-status.md`。
 
 ## 能力范围提示
 

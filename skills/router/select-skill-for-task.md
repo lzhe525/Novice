@@ -12,7 +12,9 @@ triggerWhen:
 
 ## 1. 目的
 
-在业务任务主体开始前，**仅从白名单登记来源**解析候选 Skill，结合 front matter（`status: active`、`routeEnabled: true`）与磁盘存在性，判定是否应调用某一 **项目本地 Skill** 或 **公共 Skill**；对满足条件的 available Skill 给出 **必须先读再执行** 的决策；对 `planned` Skill 仅执行 Matrix 中的 fallback；对配置错误输出 `config_error`；可选将决策写入 `.ai/state/last-skill-routing.md`。
+在业务任务主体开始前，先按 `check-hacf-version-compatibility` 的口径完成**版本兼容判定**，再**仅从白名单登记来源**解析候选 Skill，结合 front matter（`status: active`、`routeEnabled: true`）与磁盘存在性，判定是否应调用某一 **项目本地 Skill** 或 **公共 Skill**；对满足条件的 available Skill 给出 **必须先读再执行** 的决策；对 `planned` Skill 仅执行 Matrix 中的 fallback；对配置错误输出 `config_error`；可选将决策写入 `.ai/state/last-skill-routing.md`。
+
+版本兼容判定仅用于提醒：`up_to_date` 时**不**写入 `{projectRoot}/.ai/state/hacf-version-status.md`；非 `up_to_date`（`outdated` / `unknown` / `incompatible` / `local_newer_than_public`）时，按 `check-hacf-version-compatibility` 模板写入或覆盖该状态文件并提醒用户。版本状态**不得**改变本 Skill 的路由决策结果，且**不得**自动生成升级计划或执行升级。
 
 **不得**全量扫描 `{skillLibraryRoot}/skills/**` 或任意目录后自由选择 Skill；**不得**脑补未登记的 Skill 路径。
 
@@ -44,6 +46,7 @@ triggerWhen:
 |----------|------|
 | Agent 对话 | **必须**包含结构化决策摘要（见 §11 完成标准）。 |
 | `{projectRoot}/.ai/state/last-skill-routing.md` | **仅当** `{writeRoutingState}` 为 `true` 且 `.ai/state/` 可写时覆盖写入。 |
+| `{projectRoot}/.ai/state/hacf-version-status.md` | **仅当** 本轮版本兼容判定结果非 `up_to_date` 时，按 `check-hacf-version-compatibility` 模板写入或覆盖；`up_to_date` 时不得因本 Skill 创建或覆盖该文件。 |
 
 ### `last-skill-routing.md` 结构
 
@@ -56,6 +59,10 @@ selectedSkillPath: <相对 skillLibraryRoot 或 .ai/ 的路径，无则 n/a>
 skillStatus: available|planned|n/a
 fallbackApplied: <中文简述或 n/a>
 noMatchReason: <decision 为 none 或 fallback 时的原因摘要>
+versionCompatibilityStatus: up_to_date|outdated|local_newer_than_public|unknown|incompatible|check_failed
+publicFrameworkVersion: <VERSION.md 首行或 unknown>
+localFrameworkVersion: <skillkit-status localFrameworkVersion/libraryVersion 回退值或 unknown>
+versionReminder: <版本一致/建议 plan-hacf-local-upgrade/检查失败等中文摘要>
 evidence:
   - <检索层与路径>
 ---
@@ -72,36 +79,43 @@ evidence:
   - `{skillLibraryRoot}/rules/routing/mandatory-skill-trigger-rule.md`
   - `{skillLibraryRoot}/rules/routing/skill-routing-preflight-rule.md`
   - `{skillLibraryRoot}/rules/routing/skill-route-enabled-rule.md`
+  - `{skillLibraryRoot}/skills/bootstrap/check-hacf-version-compatibility.md`
+  - `{skillLibraryRoot}/templates/state/hacf-version-status.template.md`
 - 建议只读：`{skillLibraryRoot}/rules/routing/new-skill-registration-rule.md`、`{skillLibraryRoot}/rules/base/project-local-priority-rule.md`、`{skillLibraryRoot}/rules/base/public-skill-library-purity-rule.md`、`{skillLibraryRoot}/rules/base/project-local-output-rule.md`、`{skillLibraryRoot}/rules/documentation/agent-context-budget-rule.md`。
 - 维护者校验路由配置时可读：`{skillLibraryRoot}/skills/router/validate-skill-routing.md`（本 Skill 运行时**不强制**执行校验，但配置错误时应提示维护者运行该校验 Skill）。
 - 若 `{projectRoot}/.ai/entry/SKILLKIT_LINK.md` 存在，**须**以其解析 `{skillLibraryRoot}` 并与反推路径交叉校验；不一致时在输出中标注 `uncertain` 并优先采用 `SKILLKIT_LINK` 解析结果。
 
 ## 6. 执行步骤
 
-1. **归一化任务信号**：合并 `{taskSignals}` 与用户最近消息，去重得到信号集合 `S`；将 `{taskSummary}` 记入输出上下文。
-2. **白名单解析候选路径**（**仅此四类来源**，不得全库扫描）：
+1. **版本兼容判定（只读优先，按需写入）**：
+   - 只读打开 `{skillLibraryRoot}/skills/bootstrap/check-hacf-version-compatibility.md`，按其 §6（含 §6.3 状态枚举）的同等口径读取 `{skillLibraryRoot}/VERSION.md`、`{skillLibraryRoot}/capabilities/hacf-capabilities.yml`、`{projectRoot}/.ai/entry/SKILLKIT_LINK.md`、`{projectRoot}/.ai/state/skillkit-status.md`，计算 `publicVer`、`localVer` 与 `compatibilityStatus`。
+   - 若 `compatibilityStatus == up_to_date`：在本 Skill 输出中记录 `versionCompatibilityStatus: up_to_date` 与版本一致提醒；**不得**因本 Skill 创建、覆盖或刷新 `{projectRoot}/.ai/state/hacf-version-status.md`。
+   - 若 `compatibilityStatus` 为 `outdated` / `unknown` / `incompatible` / `local_newer_than_public`：按 `check-hacf-version-compatibility` 的模板与占位符规则写入或覆盖 `{projectRoot}/.ai/state/hacf-version-status.md`；输出提醒须说明该状态只建议用户按需执行 `skills/bootstrap/plan-hacf-local-upgrade.md`，**不得**自动执行 `apply-hacf-local-upgrade.md`。
+   - 若版本判定所需文件不可读或状态文件写入失败：输出 `versionCompatibilityStatus: check_failed`，在 `versionReminder` 说明原因；除 `SKILLKIT_LINK.md` 缺失导致无法安全解析项目接入状态外，不得因此改变后续路由决策。
+2. **归一化任务信号**：合并 `{taskSignals}` 与用户最近消息，去重得到信号集合 `S`；将 `{taskSummary}` 记入输出上下文。
+3. **白名单解析候选路径**（**仅此四类来源**，不得全库扫描）：
    - **L1** `{projectRoot}/.ai/indexes/skill-index.md`：解析 `## 项目本地 Skill` 表中各行 `skillRelativePath`（及 `status`）；仅 `status: active` 行进入候选 `C`，标注来源 `skill-index`。
    - **L2** `{skillLibraryRoot}/routers/SKILL_ROUTER.md`：提取表中所有 `` `skills/...` `` 路径，标注来源 `SKILL_ROUTER`。
    - **L3** `{skillLibraryRoot}/routers/TASK_TRIGGER_MATRIX.md`：分别解析 **Available Skill Triggers** 与 **Planned Skill Triggers** 分区表格路径，标注 `matrix-available` 或 `matrix-planned`。
    - **禁止**：列举 `.ai/skills/project-local/` 目录发现未登记 Skill；**禁止**将 `pattern-index.md`、`code-type-index.md` 作为 Skill 发现源。
-3. **Matrix 信号匹配**：将 `S` 与 Matrix Available / Planned 各行「触发场景」列匹配；命中项并入候选集合 `M`（保留分区标签）。
-4. **存在性探测**（对 `M` 与经信号过滤后的 `C` 中每条路径 `p`）：
+4. **Matrix 信号匹配**：将 `S` 与 Matrix Available / Planned 各行「触发场景」列匹配；命中项并入候选集合 `M`（保留分区标签）。
+5. **存在性探测**（对 `M` 与经信号过滤后的 `C` 中每条路径 `p`）：
    - 若来自 skill-index 或 `p` 为相对 `.ai/` 的项目本地路径：探测 `{projectRoot}/.ai/{相对路径}`。
    - 否则：探测 `{skillLibraryRoot}/{p}`。
    - 记录 `exists: true|false`。
-5. **读取 front matter 门槛**（对 `exists: true` 的候选）：解析文件首块 YAML；记录 `status`、`routeEnabled`、`description`、`triggerWhen`。
+6. **读取 front matter 门槛**（对 `exists: true` 的候选）：解析文件首块 YAML；记录 `status`、`routeEnabled`、`description`、`triggerWhen`。
    - 仅当 `status: active` **且** `routeEnabled: true` **且** 路径已出现在 L1/L2/L3 白名单解析结果中，标记为 `routeEligible: true`。
    - 否则标记为 `routeEligible: false` 并在内部记录排除原因（供 `noMatchReason` 使用）。
-6. **应用强制触发规则**：只读 `mandatory-skill-trigger-rule.md` 与 `skill-route-enabled-rule.md`，结合 Matrix 分区、`exists`、`routeEligible` 判定：
+7. **应用强制触发规则**：只读 `mandatory-skill-trigger-rule.md` 与 `skill-route-enabled-rule.md`，结合 Matrix 分区、`exists`、`routeEligible` 判定：
    - Matrix **Available** + `exists: true` + `routeEligible: true` → `decision: invoke`（项目本地 skill-index 同名意图优先于公共路径）。
    - Matrix **Available** + `exists: false` → `decision: config_error`（**routing error**）；向用户说明 Matrix 与磁盘不一致；**禁止**脑补 Skill 执行步骤。
    - Matrix **Available** + `exists: true` + `routeEligible: false` → `decision: config_error` 或排除后 `none`；说明 metadata 未满足（如 `routeEnabled: false`）。
    - Matrix **Planned** → `decision: fallback`；向用户说明「该能力在公共库尚未以 Skill 落地（planned）」；执行该行 fallback；**不得**读取 planned Skill 文件或声称已执行。
    - SKILL_ROUTER 命中且 `routeEligible: true`、无 Matrix 冲突 → 可 `invoke`（非 Matrix must_invoke 时为建议级，须在 evidence 注明）。
    - 无命中且无可路由候选 → `decision: none`；**须**在 `noMatchReason` 列出原因（无信号匹配 / 未登记 / metadata 未满足 / 文件缺失等）。
-7. **输出决策摘要**（对话必出）：`decision`、`selectedSkillPath`、`skillStatus`、`fallbackApplied`、`noMatchReason`（若适用）、`evidence` 列表。
-8. **可选写盘**：若 `{writeRoutingState}` 为 `true`，按 §4 结构覆盖写入 `last-skill-routing.md`。
-9. **后续动作**：
+8. **输出决策摘要**（对话必出）：`decision`、`selectedSkillPath`、`skillStatus`、`fallbackApplied`、`noMatchReason`（若适用）、`versionCompatibilityStatus`、`publicFrameworkVersion`、`localFrameworkVersion`、`versionReminder`、`evidence` 列表。
+9. **可选写盘**：若 `{writeRoutingState}` 为 `true`，按 §4 结构覆盖写入 `last-skill-routing.md`。
+10. **后续动作**：
    - `invoke`：Agent **必须**在继续任务主体前全文读取 `selectedSkillPath` 对应文件，并严格按其 **第 6 节「执行步骤」**（或等价编排节）执行。
    - `fallback`：按 Matrix Planned 说明在对话中完成；**不得**声称已执行 planned Skill。
    - `none`：按普通方式处理任务；**须**说明未命中原因；不声称经过某 Skill。
@@ -137,6 +151,7 @@ evidence:
 | `decision: none` | 无可用 Skill；普通处理；`noMatchReason` 必填；不声称经过某 Skill。 |
 | `decision: fallback` | 执行 Matrix Planned 对应 fallback；说明 planned 未实现；**不**打开 planned 路径。 |
 | `decision: config_error` | 报告 routing error；**不**假装读过 Skill；建议 `validate-skill-routing`；可经用户确认降级为 `none`。 |
+| `versionCompatibilityStatus` 非 `up_to_date` | 写入或覆盖 `hacf-version-status.md` 并提醒用户；不改变 `decision`；不自动 `plan` / `apply`。 |
 | `.ai/indexes/skill-index.md` 缺失 | 跳过 L1；仅用 L2–L3；在 `evidence` 注明缺口。 |
 | `SKILLKIT_LINK.md` 缺失 | **中止**本 Skill，提示先执行 `load-skill-library`；不写 `last-skill-routing.md`。 |
 | 发现 project-local 文件未在 skill-index 登记 | 在 `evidence` 记 warning「未登记，不参与自动路由」；**不得** invoke。 |
@@ -151,12 +166,15 @@ evidence:
 6. **不得**在本 Skill 内修改业务源码。
 7. **不得**在无用户授权时因预检而批量重写 `.ai/docs/**`。
 8. **不得**引用未出现在白名单解析结果中的 Skill 路径。
+9. **不得**在 `versionCompatibilityStatus: up_to_date` 时因本 Skill 创建或覆盖 `hacf-version-status.md`。
+10. **不得**因版本不一致自动执行 `plan-hacf-local-upgrade` 或 `apply-hacf-local-upgrade`。
 
 ## 11. 完成标准
 
 - [ ] 已仅从 §6 白名单四类来源解析候选，并在 `evidence` 中列出实际读取或探测的路径。
+- [ ] 已完成版本兼容判定；`up_to_date` 时未写入 `hacf-version-status.md`，非 `up_to_date` 时已写入或说明写入失败。
 - [ ] 已对候选做存在性探测与 front matter `routeEligible` 判定。
-- [ ] 对话输出含：`decision`、`selectedSkillPath`（或 `n/a`）、`skillStatus`、`fallbackApplied`（或 `n/a`）、`noMatchReason`（`none`/`fallback` 时）。
+- [ ] 对话输出含：`decision`、`selectedSkillPath`（或 `n/a`）、`skillStatus`、`fallbackApplied`（或 `n/a`）、`noMatchReason`（`none`/`fallback` 时）、`versionCompatibilityStatus` 与 `versionReminder`。
 - [ ] 若 `decision: invoke`，已明确下一步须先读的 Skill 路径。
 - [ ] 若 `{writeRoutingState}` 为 `true`，已写入 `last-skill-routing.md` 或说明写盘失败原因。
 
@@ -167,6 +185,8 @@ evidence:
 | `{skillLibraryRoot}` 不可解析 | 停止；提示 Bootstrap；不产出 invoke。 |
 | Matrix / 强制触发 Rule 文件缺失 | 停止；记 `config_error`；建议修复公共库。 |
 | `.ai/` 不可读但公共库可读 | 降级：仅 L2–L3 + Matrix；跳过 skill-index。 |
+| 版本兼容判定失败 | 输出 `versionCompatibilityStatus: check_failed` 与原因；若不影响公共 Router / Matrix 读取，继续给出路由决策。 |
+| 非 `up_to_date` 但 `hacf-version-status.md` 写盘失败 | 对话输出仍须提醒版本状态与写盘失败；不阻塞后续 `invoke`。 |
 | `last-skill-routing.md` 写盘失败 | 对话输出仍须完整；注明写盘失败，不阻塞后续 `invoke`。 |
 | 用户任务属于纯 Bootstrap | 允许 `decision: none` 并注明「Bootstrap 豁免预检」。 |
 
@@ -175,6 +195,7 @@ evidence:
 | 允许 |
 |------|
 | `{projectRoot}/.ai/state/last-skill-routing.md`（**仅当** `{writeRoutingState}` 为 `true`） |
+| `{projectRoot}/.ai/state/hacf-version-status.md`（**仅当** 版本兼容判定非 `up_to_date`） |
 
 | 禁止 |
 |------|

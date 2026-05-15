@@ -2,7 +2,7 @@
 
 > 项目名称：HACF — Human-AI Collaboration Framework  
 > 中文名：人类与 AI 协作框架  
-> 当前版本：0.2.7（`bootstrap-mvp+scan+pattern+health-onboarding+productivity-grill+version-compat-local-upgrade+skill-routing+doc-sync-precheck`）
+> 当前版本：0.2.8（`bootstrap-mvp+scan+pattern+health-onboarding+productivity-grill+version-compat-local-upgrade+skill-routing+doc-sync-precheck+version-reminder-preflight`）
 > 当前定位：Agent-first 公共 Skill 文档库  
 > 推荐使用环境：Cursor、Codex、Claude Code 或其他可读取项目文件的 Agent  
 > 推荐文档语言：中文为主，代码路径、类名、方法名、配置名、Skill 名称保持原文
@@ -178,7 +178,7 @@ workspace/
 
 ### 4.2 HACF 公共库目录
 
-当前 0.2.7 仓库结构：
+当前 0.2.8 仓库结构：
 
 ```text
 HACF/
@@ -306,7 +306,7 @@ HACF/
 
 ## 5. 当前主干能力
 
-当前 HACF 0.2.7 主干能力分为六类：Bootstrap、Scan、Pattern、Docs、State / 本地化、Health。
+当前 HACF 0.2.8 主干能力分为六类：Bootstrap、Scan、Pattern、Docs、State / 本地化、Health。
 
 ### 5.1 Bootstrap：项目接入
 

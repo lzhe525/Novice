@@ -10,7 +10,7 @@
 
 ## Skill 路由预检
 
-涉及代码理解/修改、调试、规划、测试、文档、Pattern 或项目本地 Skill 的任务，开始前须完成 Skill 路由预检（见 `.ai/entry/AI_ENTRY.md` 或公共库 `skills/router/select-skill-for-task.md`）。仅对 `available` 且文件存在的 Skill 必须先读再执行；项目本地 Skill 优先。
+涉及代码理解/修改、调试、规划、测试、文档、Pattern 或项目本地 Skill 的任务，开始前须完成版本兼容提醒与 Skill 路由预检（见 `.ai/entry/AI_ENTRY.md` 或公共库 `skills/router/select-skill-for-task.md`）。版本一致时仅提醒且不刷新状态；版本不一致时写入 `.ai/state/hacf-version-status.md` 并提醒用户。仅对 `available` 且文件存在的 Skill 必须先读再执行；项目本地 Skill 优先。
 
 ## 写入范围
 

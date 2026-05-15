@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.8]
+
+- 将后续任务的 Skill 路由预检扩展为「版本兼容判定 + Skill 路由决策」：`select-skill-for-task` 每次先按 `check-hacf-version-compatibility` 口径计算版本状态；`up_to_date` 仅提醒不写状态，非一致状态才写入 `.ai/state/hacf-version-status.md`。
+- 扩展 `last-skill-routing.md` 可选版本提醒字段，并更新路由预检 Rule、Router 与极薄入口模板，明确版本提醒不阻断路由、不自动升级。
+
 ## [0.2.7]
 
 - 调整文档同步门禁为**建议式执行前预判**：Agent 在落码前判断六类 `.ai/` 产物是否预计受影响；`check-doc-impact-after-change` 作为正式报告加强动作，仅在显式要求、影响明显或不确定时执行。

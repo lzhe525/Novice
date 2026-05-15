@@ -12,6 +12,8 @@ triggerWhen:
 
 读取公共 HACF 的 `VERSION.md` 与 `capabilities/hacf-capabilities.yml`，结合项目 `.ai/entry/SKILLKIT_LINK.md` 与 `.ai/state/skillkit-status.md`，判定项目 **`localFrameworkVersion`** 与公共 **`currentVersion`** 是否一致、项目是否具备当前版本声明的 `requiredFiles`，并将结论**覆盖写入** `{projectRoot}/.ai/state/hacf-version-status.md`。
 
+当本 Skill 被**独立执行**，或被 `load-skill-library` / `guide-project-onboarding` / `apply-hacf-local-upgrade` 明确编排执行时，保持上述覆盖写入语义。若由 `skills/router/select-skill-for-task.md` 作为任务路由的内嵌版本预检使用，则只复用本 Skill 的读取与判定口径：`compatibilityStatus == up_to_date` 时不写入 `hacf-version-status.md`，非 `up_to_date` 时才按本 Skill 模板写入或覆盖该文件。
+
 ## 2. 适用场景
 
 - `load-skill-library` 末尾编排执行，使新项目落地即有版本状态。
@@ -32,6 +34,8 @@ triggerWhen:
 | `{projectRoot}/.ai/state/hacf-version-status.md` | 自模板实例化并**覆盖写入**。模板：[`templates/state/hacf-version-status.template.md`](../../templates/state/hacf-version-status.template.md)。 |
 
 Agent 回复须含：本文件相对路径、解析得到的 `compatibilityStatus`、公共版本与本地版本字符串。
+
+> 内嵌预检说明：`select-skill-for-task` 输出版本提醒时，仍须给出 `compatibilityStatus`、公共版本与本地版本；但仅当状态非 `up_to_date` 时才写入本文件。
 
 ### 模板占位符
 
