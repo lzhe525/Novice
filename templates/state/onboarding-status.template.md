@@ -8,7 +8,10 @@ loadSkillLibraryDone: false
 agentsMdVerified: false
 aiDirectoryVerified: false
 entryDirectoryVerified: false
+agentDefaultEntryDone: false
 readinessChecked: false
+hacfVersionChecked: false
+hacfVersionBlocking: false
 humanBasicsConfirmed: false
 humanConstraintsBundleConfirmed: false
 onboardingArtifactsSynced: false
@@ -26,9 +29,11 @@ projectNameOrSlug: "{{PROJECT_NAME_OR_SLUG}}"
 |------|------|
 | `phase_confirm_roots` | 确认 `{projectRoot}` 与公共库相对路径 |
 | `phase_run_load_skill_library` | 执行或引导执行 `load-skill-library` |
+| `phase_check_hacf_version` | 执行或引导执行 `check-hacf-version-compatibility`，写入 `.ai/state/hacf-version-status.md` |
 | `phase_verify_agents` | 确认根目录 `AGENTS.md` 已正确引用入口 |
 | `phase_verify_ai_tree` | 确认 `.ai/` 目录存在 |
 | `phase_verify_entry` | 确认 `.ai/entry/` 与链接文件 |
+| `phase_ensure_agent_default_entry` | 选择目标 Agent 并执行 `ensure-agent-default-entry` |
 | `phase_run_readiness` | 执行或引导执行 `check-project-readiness` |
 | `phase_confirm_project_basics` | 人类确认项目基础信息 |
 | `phase_confirm_constraints_bundle` | 人类确认硬约束、高风险区、目录策略等 |
@@ -48,6 +53,8 @@ projectNameOrSlug: "{{PROJECT_NAME_OR_SLUG}}"
 - 待答问题与答复摘要：`.ai/state/onboarding-questions.md`
 - Bootstrap 就绪：`.ai/state/readiness.md`
 - SkillKit 摘要：`.ai/state/skillkit-status.md`
+- 框架版本比对：`.ai/state/hacf-version-status.md`
+- Agent 默认入口：`.ai/state/agent-entry-status.md`、`.ai/config/agent-entry-policy.md`
 
 ## 最近人类动作（可选）
 

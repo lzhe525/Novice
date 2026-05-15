@@ -2,7 +2,7 @@
 
 ## 1. 目的
 
-作为 HACF **项目接入总向导**，在 `{projectRoot}` 内以**分阶段、可人工门控**的方式，引导开发者完成：确认根目录与公共库路径、执行或引导执行 `load-skill-library`、校验 `AGENTS.md` 与 `.ai/entry/`、执行就绪检查、收集项目基础信息与约束类确认，并维护 `.ai/state/onboarding-*.md`。**不**进入 Scan / Pattern / Develop 能力；**不**批量创建 `check-project-readiness` 所列「后续阶段勿自动创建」的全量配置壳文件（如 `project-profile.md`、`hard-constraints.md` 等）。
+作为 HACF **项目接入总向导**，在 `{projectRoot}` 内以**分阶段、可人工门控**的方式，引导开发者完成：确认根目录与公共库路径、执行或引导执行 `load-skill-library`、**早期执行框架版本兼容检查**、校验 `AGENTS.md` 与 `.ai/entry/`、**选择目标 Agent 并安装极薄默认入口**（`ensure-agent-default-entry`）、执行就绪检查、收集项目基础信息与约束类确认，并维护 `.ai/state/onboarding-*.md`。**不**进入 Scan / Pattern / Develop 能力；**不**批量创建 `check-project-readiness` 所列「后续阶段勿自动创建」的全量配置壳文件（如 `project-profile.md`、`hard-constraints.md` 等）。
 
 ## 2. 适用场景
 
@@ -46,8 +46,8 @@
    - **当前需要用户确认的问题**（若无则写「无」，并说明为何可直接进入下一阶段）；
    - **推荐回复格式**（可复制示例）；
    - **下一步**（例如：「请回复确认后再次激活本 Skill」或「请让 Agent 只读执行 `skills/bootstrap/recommend-next-onboarding-step.md`」）。
-4. **项目产物**仅写入 `{projectRoot}/.ai/**` 及子 Skill 允许的 `{projectRoot}/AGENTS.md`；**不得**写入 `{skillLibraryRoot}/**`。
-5. **不得修改业务源码**（`AGENTS.md` 除外，且须通过 `create-or-update-agents-md` 或 `load-skill-library` 编排）。
+4. **项目产物**仅写入 `{projectRoot}/.ai/**` 及子 Skill 允许的 `{projectRoot}/AGENTS.md`、`{projectRoot}/CLAUDE.md`、`{projectRoot}/.cursor/rules/` 下单文件（见 `ensure-agent-default-entry`）；**不得**写入 `{skillLibraryRoot}/**`。
+5. **不得修改业务源码**（`AGENTS.md`、`CLAUDE.md`、Cursor Rule 除外，且须通过 `load-skill-library` / `ensure-agent-default-entry` / `create-or-update-agents-md` 编排）。
 6. **不得进入** `skills/scan/**`、`skills/pattern/**`、`skills/develop/**`。
 
 ### 6.1 建议只读前置 Rule
@@ -58,6 +58,11 @@
 - `{skillLibraryRoot}/rules/bootstrap/onboarding-human-confirmation-rule.md`
 - `{skillLibraryRoot}/rules/base/project-local-output-rule.md`
 - `{skillLibraryRoot}/rules/base/public-skill-library-purity-rule.md`
+- `{skillLibraryRoot}/rules/bootstrap/agent-default-entry-rule.md`
+- `{skillLibraryRoot}/rules/bootstrap/agent-entry-thin-adapter-rule.md`
+- `{skillLibraryRoot}/rules/bootstrap/hacf-version-compatibility-rule.md`
+- `{skillLibraryRoot}/rules/bootstrap/hacf-local-upgrade-rule.md`
+- `{skillLibraryRoot}/rules/bootstrap/hacf-upgrade-no-overwrite-rule.md`
 
 ## 7. 阶段模型（`currentPhase`）
 
@@ -65,9 +70,11 @@
 |---------------------|----------------|
 | `phase_confirm_roots` | 确认 `{projectRoot}` 与 `{skillLibraryRelativePath}` |
 | `phase_run_load_skill_library` | 执行或引导执行 `load-skill-library` |
+| `phase_check_hacf_version` | 执行或引导执行 `check-hacf-version-compatibility`，写入 `.ai/state/hacf-version-status.md` |
 | `phase_verify_agents` | 校验根目录 `AGENTS.md` 与 `AI_ENTRY.md` 引用关系 |
 | `phase_verify_ai_tree` | 校验 `.ai/` 存在 |
 | `phase_verify_entry` | 校验 `.ai/entry/` 与 `AI_ENTRY.md`、`SKILLKIT_LINK.md` |
+| `phase_ensure_agent_default_entry` | 选择或确认目标 Agent，执行或引导执行 `ensure-agent-default-entry`（默认传入 `targetAgent: all`；若人类本轮明确限定则传入对应枚举） |
 | `phase_run_readiness` | 执行或引导执行 `check-project-readiness` |
 | `phase_confirm_project_basics` | 人类确认项目基础信息（写入 `onboarding-questions.md` 第一节摘要） |
 | `phase_confirm_constraints_bundle` | 人类确认硬约束、高风险区、源码/忽略/只读目录与语言策略（第二节摘要） |
@@ -81,25 +88,35 @@
 0. **解析 `{skillLibraryRoot}`**：同 `load-skill-library` 的路径反推规则；失败则停止，不写入 `{projectRoot}`。
 1. **读取或初始化 `onboarding-status.md`**：
    - 若 `{projectRoot}/.ai/state/onboarding-status.md` 不存在：不得在未由人类确认 `{projectRoot}` 与 `{skillLibraryRelativePath}` 前创建。若文件不存在且人类尚未确认：将「逻辑上的」`currentPhase` 视为 `phase_confirm_roots`，不在此步写入磁盘。
-   - 若已存在：解析 YAML front matter 得到 `currentPhase` 与各布尔字段。
+   - 若已存在：解析 YAML front matter 得到 `currentPhase` 与各布尔字段；若缺省 `agentDefaultEntryDone` 字段则视为 `false`；若缺省 `hacfVersionChecked` / `hacfVersionBlocking` 则视为 `false`。
 2. **`phase_confirm_roots`**：
    - 若 `projectRootConfirmed` 与 `skillLibraryRelativePathConfirmed` 均为 `true`：若 `onboarding-status.md` 尚不存在，则创建目录 `{projectRoot}/.ai/state/`（及必要的 `.ai/` 父目录）后，自模板实例化该文件；占位符：`{{GENERATED_AT_ISO}}`、`{{LAST_UPDATED_AT_ISO}}` 均为当前 UTC ISO8601；`{{PROJECT_NAME_OR_SLUG}}` 来自输入或目录名；写入已确认布尔。将 `currentPhase` 更新为 `phase_run_load_skill_library`，写回；**本轮结束**（五段输出）；**不在同一轮**执行 load。
    - 否则：列出须人类确认的两项；停止等待；**不得**进入 load。
 3. **`phase_run_load_skill_library`**：
-   - 若 `SKILLKIT_LINK.md` 与 `readiness.md` 已存在且人类声明已手动完成 load：将 `loadSkillLibraryDone` 置 `true`，`currentPhase` 更新为 `phase_verify_agents`，写回状态；**本轮结束**。
+   - 若 `SKILLKIT_LINK.md` 与 `readiness.md` 已存在且人类声明已手动完成 load：将 `loadSkillLibraryDone` 置 `true`，`currentPhase` 更新为 `phase_check_hacf_version`，写回状态；**本轮结束**。
    - 否则：打开 `{skillLibraryRoot}/skills/bootstrap/load-skill-library.md`，严格按其**第 6 节**执行；失败则五段输出说明阻塞，**不**强行推进 `currentPhase`。
-   - 若 load 成功：将 `loadSkillLibraryDone: true`，`currentPhase` 更新为 `phase_verify_agents`，写回状态；**本轮结束**（**不在同一轮**执行 `phase_verify_agents`）。
-4. **`phase_verify_agents`**：验证 `{projectRoot}/AGENTS.md` 存在且正文含 `.ai/entry/AI_ENTRY.md` 或 `AI_ENTRY.md` 子串；通过则 `agentsMdVerified: true`，`currentPhase` → `phase_verify_ai_tree`，写回状态，**本轮结束**；否则五段输出并建议 `create-or-update-agents-md` 或重跑 load，**停止**且不推进 `currentPhase`。
-5. **`phase_verify_ai_tree`**：验证 `{projectRoot}/.ai/` 目录存在；通过则 `aiDirectoryVerified: true`，`currentPhase` → `phase_verify_entry`，写回状态，**本轮结束**；否则停止并说明须先完成 initialize/load。
-6. **`phase_verify_entry`**：验证 `{projectRoot}/.ai/entry/AI_ENTRY.md` 与 `SKILLKIT_LINK.md` 存在；通过则 `entryDirectoryVerified: true`，`currentPhase` → `phase_run_readiness`，写回状态，**本轮结束**；否则停止。
-7. **`phase_run_readiness`**：打开 `{skillLibraryRoot}/skills/bootstrap/check-project-readiness.md`，严格按其第 6 节执行；完成后 `readinessChecked: true`，`currentPhase` → `phase_confirm_project_basics`，写回状态，**本轮结束**。若 R1–R6 存在 `fail`，五段输出须列出人类待办（不得声称语言策略已确认）。
-8. **`phase_confirm_project_basics`**：依据 `{skillLibraryRoot}/templates/state/onboarding-questions.template.md` **第一节**，向用户展示问题；若人类**尚未**在本轮提供答复：**停止**（可仅创建或刷新 `onboarding-questions.md` 骨架，不得编造摘要）；收到答复后：将摘要写入 `onboarding-questions.md` 对应节，置 `humanBasicsConfirmed: true`，`currentPhase` → `phase_confirm_constraints_bundle`，写回状态，**本轮结束**。
-9. **`phase_confirm_constraints_bundle`**：依据模板**第二节**逐项确认；语言策略须指向 `.ai/config/language-policy.md` 的人类确认流程，**禁止**代写 `reviewedByHuman: true`；若人类尚未答复：**停止**；完成后：`humanConstraintsBundleConfirmed: true`，`currentPhase` → `phase_sync_onboarding_artifacts`，写回状态，**本轮结束**。
-10. **`phase_sync_onboarding_artifacts`**：
+   - 若 load 成功：将 `loadSkillLibraryDone: true`，`currentPhase` 更新为 `phase_check_hacf_version`，写回状态；**本轮结束**（**不在同一轮**执行 `phase_check_hacf_version`）。
+4. **`phase_check_hacf_version`**：
+   - 打开 `{skillLibraryRoot}/skills/bootstrap/check-hacf-version-compatibility.md`，严格按其**第 6 节**执行。
+   - 写回 `onboarding-status.md`：`hacfVersionChecked: true`；若 `.ai/state/hacf-version-status.md` front matter 中 `compatibilityStatus` 为 `incompatible` 或 `unknown`，置 `hacfVersionBlocking: true`，否则置 `false`（`outdated` 不自动阻塞后续 Bootstrap，但五段输出须提示可执行 `plan-hacf-local-upgrade.md`）。
+   - 五段输出中若状态为 `outdated` / `incompatible` / `unknown`，须明确下一步为「人类确认后执行 `plan-hacf-local-upgrade.md`」，**禁止**在同一轮自动执行 `apply-hacf-local-upgrade.md`。
+   - 将 `currentPhase` 更新为 `phase_verify_agents`，写回状态，**本轮结束**。
+5. **`phase_verify_agents`**：验证 `{projectRoot}/AGENTS.md` 存在且正文含 `.ai/entry/AI_ENTRY.md` 或 `AI_ENTRY.md` 子串；通过则 `agentsMdVerified: true`，`currentPhase` → `phase_verify_ai_tree`，写回状态，**本轮结束**；否则五段输出并建议 `create-or-update-agents-md` 或重跑 load，**停止**且不推进 `currentPhase`。
+6. **`phase_verify_ai_tree`**：验证 `{projectRoot}/.ai/` 目录存在；通过则 `aiDirectoryVerified: true`，`currentPhase` → `phase_verify_entry`，写回状态，**本轮结束**；否则停止并说明须先完成 initialize/load。
+7. **`phase_verify_entry`**：验证 `{projectRoot}/.ai/entry/AI_ENTRY.md` 与 `SKILLKIT_LINK.md` 存在；通过则 `entryDirectoryVerified: true`，`currentPhase` → `phase_ensure_agent_default_entry`，写回状态，**本轮结束**；否则停止。
+8. **`phase_ensure_agent_default_entry`**：
+   - 若人类在本轮明确给出 `targetAgent`（单一枚举或 `all`）：记录于 `onboarding-status.md` 正文「备注」或 `onboarding-questions.md` 可选节（可选）；打开 `{skillLibraryRoot}/skills/bootstrap/ensure-agent-default-entry.md`，严格按其**第 6 节**执行并传入该 `{targetAgent}`。
+   - 否则：打开同一 Skill，**显式传入 `{targetAgent}: all`** 执行（与 `load-skill-library` 默认一致），避免无参阻塞。
+   - 若 `ensure-agent-default-entry` 因前置缺失或用户拒绝而**整体**未执行写盘：五段输出说明阻塞，**不**将 `agentDefaultEntryDone` 置 `true`，**不**推进 `currentPhase`。
+   - 若已执行完毕（含部分路径 `blocked`）：`agentDefaultEntryDone: true`，`currentPhase` → `phase_run_readiness`，写回状态，**本轮结束**。
+9. **`phase_run_readiness`**：打开 `{skillLibraryRoot}/skills/bootstrap/check-project-readiness.md`，严格按其第 6 节执行；完成后 `readinessChecked: true`，`currentPhase` → `phase_confirm_project_basics`，写回状态，**本轮结束**。若 R1–R6 存在 `fail`，五段输出须列出人类待办（不得声称语言策略已确认）。
+10. **`phase_confirm_project_basics`**：依据 `{skillLibraryRoot}/templates/state/onboarding-questions.template.md` **第一节**，向用户展示问题；若人类**尚未**在本轮提供答复：**停止**（可仅创建或刷新 `onboarding-questions.md` 骨架，不得编造摘要）；收到答复后：将摘要写入 `onboarding-questions.md` 对应节，置 `humanBasicsConfirmed: true`，`currentPhase` → `phase_confirm_constraints_bundle`，写回状态，**本轮结束**。
+11. **`phase_confirm_constraints_bundle`**：依据模板**第二节**逐项确认；语言策略须指向 `.ai/config/language-policy.md` 的人类确认流程，**禁止**代写 `reviewedByHuman: true`；若人类尚未答复：**停止**；完成后：`humanConstraintsBundleConfirmed: true`，`currentPhase` → `phase_sync_onboarding_artifacts`，写回状态，**本轮结束**。
+12. **`phase_sync_onboarding_artifacts`**：
     - 若 `onboarding-checklist.md` 或 `onboarding-questions.md` 缺失：自模板实例化（替换占位符同步骤 1）。
     - 合并更新三份状态文件：`lastUpdatedAt` 刷新；`onboarding-status.md` 中各布尔与 `readiness.md` / 仓库事实对齐；`onboarding-checklist.md` 仅对**已满足事实**的步骤勾选 `- [x]`。
     - 置 `onboardingArtifactsSynced: true`，`currentPhase` → `phase_handoff_next`，写回状态，**本轮结束**（**不在同一轮**执行交接文案以外的重复 load）。
-11. **`phase_handoff_next`**：五段输出中明确下一步：建议人类或 Agent 打开 `{skillLibraryRoot}/skills/bootstrap/recommend-next-onboarding-step.md` 执行只读推荐；置 `handoffDone: true`；`currentPhase` 保持 `phase_handoff_next`；正文说明后续 Scan / Pattern 不在本 Skill 范围。写回状态后**本轮结束**。
+13. **`phase_handoff_next`**：五段输出中明确下一步：建议人类或 Agent 打开 `{skillLibraryRoot}/skills/bootstrap/recommend-next-onboarding-step.md` 执行只读推荐；置 `handoffDone: true`；`currentPhase` 保持 `phase_handoff_next`；正文说明后续 Scan / Pattern 不在本 Skill 范围。写回状态后**本轮结束**。
 
 **模板占位符约定**（实例化时）：
 
@@ -113,12 +130,12 @@
 | `{projectRoot}/.ai/state/onboarding-status.md` |
 | `{projectRoot}/.ai/state/onboarding-checklist.md` |
 | `{projectRoot}/.ai/state/onboarding-questions.md` |
-| 经由子 Skill 允许的 `{projectRoot}/AGENTS.md`、`{projectRoot}/.ai/entry/**`、`{projectRoot}/.ai/state/readiness.md`、`{projectRoot}/.ai/state/skillkit-status.md`、`{projectRoot}/.ai/config/language-policy.md`（仅当编排 `load-skill-library` / `check-project-readiness` 等时） |
+| 经由子 Skill 允许的 `{projectRoot}/AGENTS.md`、`{projectRoot}/CLAUDE.md`、`{projectRoot}/.cursor/rules/` 下单文件、`{projectRoot}/.ai/entry/**`、`{projectRoot}/.ai/state/readiness.md`、`{projectRoot}/.ai/state/skillkit-status.md`、`{projectRoot}/.ai/state/hacf-version-status.md`、`{projectRoot}/.ai/reports/hacf-version-upgrade-plan.md`（仅当人类明确要求本向导编排 `plan-hacf-local-upgrade` 时）、`{projectRoot}/.ai/state/agent-entry-status.md`、`{projectRoot}/.ai/config/language-policy.md`、`{projectRoot}/.ai/config/agent-entry-policy.md`（仅当编排 `load-skill-library` / `ensure-agent-default-entry` / `check-project-readiness` / `check-hacf-version-compatibility` / `plan-hacf-local-upgrade` 等时） |
 
 | 禁止 |
 |------|
 | `{skillLibraryRoot}/**` 任意写入 |
-| `{projectRoot}` 下除 `AGENTS.md` 外的源码与构建产物修改 |
+| `{projectRoot}` 下除 `AGENTS.md`、`CLAUDE.md`、`.cursor/rules/` 下由 `agent-entry-policy.md` 声明之**单文件** Cursor Rule 外的源码与构建产物修改 |
 | 未经专门 Skill 许可创建 `.ai/docs/**`、`.ai/indexes/**`、`.ai/pattern-packs/**` 等 |
 | 因本向导而批量创建 `project-profile.md`、`hard-constraints.md` 等（除非未来独立 Skill 明确允许） |
 

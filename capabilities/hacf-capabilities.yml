@@ -1,0 +1,58 @@
+# HACF 公共库能力声明（YAML）
+# 维护约定：发布新版本时须将 currentVersion 与仓库根目录 VERSION.md 首行保持一致，并更新 versionOrder / versions / capabilityDefinitions。
+
+framework:
+  name: HACF
+  currentVersion: "0.2.5"
+
+# 能力声明 schema 版本；供 hacf-version-status 等文件引用，与 Git tag 无关。
+schemaVersion: 1
+
+# 供 Agent 计算升级路径的显式序（从旧到新）；新增版本时追加到列表末尾。
+versionOrder:
+  - "0.2.4"
+  - "0.2.5"
+
+# 能力定义：id 在 versions.*.requiredProjectCapabilities 中引用。
+capabilityDefinitions:
+  bootstrap_min_entry:
+    description_zh: 项目侧存在 `.ai/entry/` 下 AI 入口与公共库链接文件，可解析 `{skillLibraryRoot}`。
+    autoRemediate: true
+    requiresHumanConfirmation: false
+  bootstrap_min_state:
+    description_zh: 项目侧存在 `skillkit-status.md` 等核心状态文件，用于记录 `localFrameworkVersion` 与链接摘要。
+    autoRemediate: true
+    requiresHumanConfirmation: false
+  bootstrap_min_config:
+    description_zh: 项目侧存在 `language-policy.md`（Bootstrap 人工门控；内容确认仍须人类，不得由升级 Skill 代写 `reviewedByHuman: true`）。
+    autoRemediate: true
+    requiresHumanConfirmation: true
+  framework_version_status:
+    description_zh: 存在 `.ai/state/hacf-version-status.md`，记录公共与本地框架版本比对结论，供健康检查与升级编排读取。
+    autoRemediate: true
+    requiresHumanConfirmation: false
+
+versions:
+  # 0.2.4：引入版本兼容机制前的 Bootstrap 基线（无 hacf-version-status 与 framework_version_status）。
+  "0.2.4":
+    requiredProjectCapabilities:
+      - bootstrap_min_entry
+      - bootstrap_min_state
+      - bootstrap_min_config
+    requiredFiles:
+      - .ai/entry/SKILLKIT_LINK.md
+      - .ai/entry/AI_ENTRY.md
+      - .ai/state/skillkit-status.md
+      - .ai/config/language-policy.md
+  "0.2.5":
+    requiredProjectCapabilities:
+      - bootstrap_min_entry
+      - bootstrap_min_state
+      - bootstrap_min_config
+      - framework_version_status
+    requiredFiles:
+      - .ai/entry/SKILLKIT_LINK.md
+      - .ai/entry/AI_ENTRY.md
+      - .ai/state/skillkit-status.md
+      - .ai/config/language-policy.md
+      - .ai/state/hacf-version-status.md

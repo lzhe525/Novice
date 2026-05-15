@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.5]
+
+- 新增 **框架版本兼容与项目本地升级**：`capabilities/hacf-capabilities.yml`；Bootstrap `check-hacf-version-compatibility`、`plan-hacf-local-upgrade`、`apply-hacf-local-upgrade`；状态/报告模板与 `rules/bootstrap/hacf-*-rule.md` 三条。
+- 项目侧 `skillkit-status.md` 增加 `localFrameworkVersion`；`load-skill-library` 编排版本检查；`guide-project-onboarding` 增加 `phase_check_hacf_version`；`check-project-ai-health` 增加 H4.1。
+- 更新 `routers/SKILL_ROUTER.md`、`initialize-project-ai-context.md`、`check-project-readiness.md`、`project-ai-health-rule.md`。
+
 ## [0.2.4]
 
 - 新增 **Docs**：`skills/docs/grill-with-project-docs.md`（对照 `.ai` 文档拷问、对齐方案；可选写入 `.ai/docs/project/design-grill-notes.md`）。

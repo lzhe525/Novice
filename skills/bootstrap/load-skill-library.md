@@ -2,7 +2,7 @@
 
 ## 1. 目的
 
-将 HACF 公共 Skill 库以**只读引用**方式接入 `{projectRoot}`：依次执行 `create-or-update-agents-md`、`initialize-project-ai-context`、`check-project-readiness`，完成极薄 `AGENTS.md`、`.ai/entry|state|config` 基础结构与就绪检查，**不**复制整个公共库到项目内。
+将 HACF 公共 Skill 库以**只读引用**方式接入 `{projectRoot}`：依次执行 `create-or-update-agents-md`、`initialize-project-ai-context`、`check-project-readiness`、`ensure-agent-default-entry`（默认 `targetAgent: all`）、`check-hacf-version-compatibility`，完成极薄 `AGENTS.md`、多 Agent 极薄入口、`.ai/entry|state|config` 基础结构、就绪检查与**框架版本兼容状态**，**不**复制整个公共库到项目内。
 
 ## 2. 适用场景
 
@@ -33,15 +33,21 @@
 | `{projectRoot}/.ai/state/skillkit-status.md` | 由子 Skill 与就绪检查更新。 |
 | `{projectRoot}/.ai/config/language-policy.md` | 由子 Skill 创建（若不存在）。 |
 | `{projectRoot}/.ai/state/readiness.md` | 由 `check-project-readiness` 写入。 |
-| Agent 回复 | 人类可读摘要：公共库版本、`projectState`、待办链接到 `readiness.md`。 |
+| `{projectRoot}/.ai/state/hacf-version-status.md` | 由步骤 8 `check-hacf-version-compatibility` 写入。 |
+| `{projectRoot}/.ai/state/agent-entry-status.md`、`{projectRoot}/.ai/config/agent-entry-policy.md`（后者若尚不存在则由 `ensure-agent-default-entry` 自模板创建） | 由 `ensure-agent-default-entry` 写入。 |
+| `{projectRoot}/CLAUDE.md`、`.cursor/rules/hacf.mdc`（或 policy 声明路径） | 由 `ensure-agent-default-entry` 按需创建或合并受控区块。 |
+| Agent 回复 | 人类可读摘要：公共库版本、`projectState`、待办链接到 `readiness.md`；并摘要 Agent 默认入口适配结果（见 `agent-entry-status.md`）。 |
 
 ## 5. 前置条件
 
 - `{skillLibraryRoot}/ENTRY.md` 与 `{skillLibraryRoot}/VERSION.md` 存在。
+- `{skillLibraryRoot}/capabilities/hacf-capabilities.yml` 存在（严格模式：缺失则步骤 8 将状态置为 `unknown`，且须在人类补齐公共库后再跑 load）。
 - 下列子 Skill 文件存在：
   - `{skillLibraryRoot}/skills/bootstrap/create-or-update-agents-md.md`
   - `{skillLibraryRoot}/skills/bootstrap/initialize-project-ai-context.md`
   - `{skillLibraryRoot}/skills/bootstrap/check-project-readiness.md`
+  - `{skillLibraryRoot}/skills/bootstrap/ensure-agent-default-entry.md`
+  - `{skillLibraryRoot}/skills/bootstrap/check-hacf-version-compatibility.md`
 - 已提供 `{skillLibraryRelativePath}`，且拼接后 `{skillLibraryRoot}` 校验通过（见步骤 1）。
 
 ## 6. 执行步骤
@@ -56,16 +62,27 @@
    - `{skillLibraryRoot}/rules/base/single-ai-context-directory-rule.md`
    - `{skillLibraryRoot}/rules/base/project-local-output-rule.md`
    - `{skillLibraryRoot}/rules/base/frontmatter-format-rule.md`
+   - `{skillLibraryRoot}/rules/bootstrap/agent-default-entry-rule.md`
+   - `{skillLibraryRoot}/rules/bootstrap/agent-entry-thin-adapter-rule.md`
+   - `{skillLibraryRoot}/rules/bootstrap/hacf-version-compatibility-rule.md`
+   - `{skillLibraryRoot}/rules/bootstrap/hacf-local-upgrade-rule.md`
+   - `{skillLibraryRoot}/rules/bootstrap/hacf-upgrade-no-overwrite-rule.md`
 4. **执行子 Skill `create-or-update-agents-md`**：
    - 打开 `{skillLibraryRoot}/skills/bootstrap/create-or-update-agents-md.md`，严格按其中 **第 6 节「执行步骤」** 对 `{projectRoot}/AGENTS.md` 操作。
 5. **执行子 Skill `initialize-project-ai-context`**：
    - 打开 `{skillLibraryRoot}/skills/bootstrap/initialize-project-ai-context.md`，严格按其中 **第 6 节「执行步骤」** 操作；传入 `{skillLibraryRelativePath}` 与可选 `{projectNameOrSlug}`。
 6. **执行子 Skill `check-project-readiness`**：
    - 打开 `{skillLibraryRoot}/skills/bootstrap/check-project-readiness.md`，严格按其中 **第 6 节「执行步骤」** 操作。
-7. **汇总输出给人类**：
-   - 读取 `{projectRoot}/.ai/state/skillkit-status.md` front matter 的 `libraryVersion`、`projectState`。
+7. **执行子 Skill `ensure-agent-default-entry`**：
+   - 打开 `{skillLibraryRoot}/skills/bootstrap/ensure-agent-default-entry.md`，严格按其中 **第 6 节「执行步骤」** 操作；**须**向该子 Skill 显式传入 `{targetAgent}: all`（由本 Skill 固定），以避免未推断时阻塞。
+8. **执行子 Skill `check-hacf-version-compatibility`**：
+   - 打开 `{skillLibraryRoot}/skills/bootstrap/check-hacf-version-compatibility.md`，严格按其中 **第 6 节「执行步骤」** 操作；写入或刷新 `{projectRoot}/.ai/state/hacf-version-status.md`。
+9. **汇总输出给人类**：
+   - 读取 `{projectRoot}/.ai/state/skillkit-status.md` front matter 的 `libraryVersion`、`localFrameworkVersion`、`projectState`。
+   - 读取 `{projectRoot}/.ai/state/hacf-version-status.md`（若存在）中的 `compatibilityStatus`。
    - 读取 `{projectRoot}/.ai/state/readiness.md` 中是否存在 `fail` 行。
-   - 在回复中列出下一步：若 `projectState` 为 `blocked` 或 `configuring`，指导人类打开 `readiness.md`「人类待办」与 `.ai/config/language-policy.md` 完成确认。
+   - 读取 `{projectRoot}/.ai/state/agent-entry-status.md`（若存在）摘要各 Agent 入口结果。
+   - 在回复中列出下一步：若 `projectState` 为 `blocked` 或 `configuring`，指导人类打开 `readiness.md`「人类待办」与 `.ai/config/language-policy.md` 完成确认；若 `agent-entry-status.md` 含 `blocked`，提示人类按该文件备注处理；若 `compatibilityStatus` 为 `outdated` / `unknown` / `incompatible`，提示按需执行 `plan-hacf-local-upgrade.md`（须人类确认后再 `apply-hacf-local-upgrade.md`）。
 
 子 Skill 的**十节全文**不在本文件中重复；任何与本文冲突之处，以子 Skill 文件为准。
 
@@ -77,26 +94,33 @@
 | `{projectRoot}/.ai/entry/AI_ENTRY.md` |
 | `{projectRoot}/.ai/entry/SKILLKIT_LINK.md` |
 | `{projectRoot}/.ai/state/skillkit-status.md` |
+| `{projectRoot}/.ai/state/hacf-version-status.md` |
 | `{projectRoot}/.ai/state/readiness.md` |
 | `{projectRoot}/.ai/config/language-policy.md` |
+| `{projectRoot}/.ai/state/agent-entry-status.md` |
+| `{projectRoot}/.ai/config/agent-entry-policy.md`（由 `ensure-agent-default-entry` 在不存在时创建） |
+| `{projectRoot}/CLAUDE.md` |
+| `{projectRoot}/.cursor/rules/hacf.mdc`（或 `agent-entry-policy.md` 中 `cursorRulePath` 指向的单文件） |
 
 | 禁止 |
 |------|
 | `{skillLibraryRoot}/**` 任意写入或删除 |
-| 向 `{projectRoot}` 除 `AGENTS.md` 与 `.ai/**` 外写入 AI 协作文档 |
+| 向 `{projectRoot}` 写入未列入上表及子 Skill 额外允许路径的 AI 协作文档 |
 | 复制整个 `{skillLibraryRoot}` 目录树到 `{projectRoot}` |
 
 ## 8. 禁止事项
 
 - **禁止**修改公共库内任何文件以「记录项目状态」。
 - **禁止**跳过 `check-project-readiness` 仍声称接入已完成。
-- **禁止**在未成功完成步骤 1 校验的情况下继续步骤 4–6。
+- **禁止**在未成功完成步骤 1 校验的情况下继续步骤 4–9。
 
 ## 9. 完成标准
 
-- [ ] 步骤 1 校验通过；步骤 4–6 已按子 Skill 执行完毕（或因子 Skill 中止条件而整流程中止）。
+- [ ] 步骤 1 校验通过；步骤 4–8 已按子 Skill 执行完毕（或因子 Skill 中止条件而整流程中止）。
 - [ ] `{projectRoot}/.ai/state/readiness.md` 存在且 R1–R6 已填充。
-- [ ] Agent 回复包含 `libraryVersion` 与 `projectState`。
+- [ ] `{projectRoot}/.ai/state/agent-entry-status.md` 已写入，**除非**整流程在步骤 7 之前已中止（此时不得声称本项完成）。
+- [ ] `{projectRoot}/.ai/state/hacf-version-status.md` 已写入，**除非**整流程在步骤 8 之前已中止。
+- [ ] Agent 回复包含 `libraryVersion`、`localFrameworkVersion`（若可得）、`projectState` 与 `compatibilityStatus`（若步骤 8 已执行）。
 - [ ] 公共库目录仍为只读意图（无对 `{skillLibraryRoot}` 的写入）。
 
 ## 10. 失败处理

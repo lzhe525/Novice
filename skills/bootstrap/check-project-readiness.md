@@ -97,6 +97,7 @@ projectState: <configuring|constraints_ready|blocked>
    - 读取 `{projectRoot}/.ai/state/skillkit-status.md`；若不存在则从 `{skillLibraryRoot}/templates/project-ai-context/skillkit-status.template.md` 实例化（占位符同 `initialize-project-ai-context`）。
    - 写入或合并 YAML front matter：
      - `libraryVersion`：来自 `{skillLibraryRoot}/VERSION.md` 的首行纯文本版本号（与 `initialize-project-ai-context` 中 `{{SKILLKIT_VERSION}}` 规则一致）。
+     - `localFrameworkVersion`：若 front matter 中该键缺失，则补为与 `libraryVersion` 相同；若已存在，则**不得降低**（与 `initialize-project-ai-context` §6 步骤 5 对 `localFrameworkVersion` 的规则一致）。
      - `lastCheck`：当前 UTC ISO8601。
      - `projectState`：步骤 5 的值。
    - 保留正文「人工可读摘要」小节并刷新其中版本与时间行。

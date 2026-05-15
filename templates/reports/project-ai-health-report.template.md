@@ -32,7 +32,7 @@ sourceOfTruth: repository
 
 | 严重等级 | 领域编号 | 说明 | 证据路径（相对项目根） |
 |----------|----------|------|------------------------|
-| <!-- critical / high / medium / low --> | <!-- H1–H10 --> | | |
+| <!-- critical / high / medium / low --> | <!-- H1–H11 --> | | |
 
 ## 可用能力判断
 
@@ -40,6 +40,7 @@ sourceOfTruth: repository
 |------|------|------|
 | 扫盘类 Skill（`skills/scan/**`） | <!-- pass / conditional / blocked --> | |
 | `validate-pattern-pack` | | |
+| `ensure-agent-default-entry`（多 Agent 极薄入口） | | |
 | `create-code-by-pattern` | | |
 | 项目本地 Skill（`.ai/skills/project-local/**`） | | |
 

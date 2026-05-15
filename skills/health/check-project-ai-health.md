@@ -2,7 +2,7 @@
 
 ## 1. 目的
 
-在**不修改业务源码、不修改 `AGENTS.md`、不自动修复、不修改 Pattern Pack、不修改项目本地 Skill 正文、不修改公共 HACF 库**的前提下，对当前项目 `{projectRoot}` 下 **HACF 协作框架**（入口、单目录约定、配置、状态、文档、索引、Pattern Pack、项目本地 Skill、风险与闭环）做一次**只读健康检查**，将结论写入 `{projectRoot}/.ai/reports/project-ai-health-report.md` 与 `{projectRoot}/.ai/state/project-ai-health-status.md`。
+在**不修改业务源码、不修改 `AGENTS.md`、`CLAUDE.md`、`.cursor/rules/` 下 Project Rule 文件、不自动修复、不修改 Pattern Pack、不修改项目本地 Skill 正文、不修改公共 HACF 库**的前提下，对当前项目 `{projectRoot}` 下 **HACF 协作框架**（入口、单目录约定、配置、状态、文档、索引、Pattern Pack、项目本地 Skill、风险与闭环）做一次**只读健康检查**，将结论写入 `{projectRoot}/.ai/reports/project-ai-health-report.md` 与 `{projectRoot}/.ai/state/project-ai-health-status.md`。
 
 ## 2. 适用场景
 
@@ -43,12 +43,12 @@
 
 - `{projectRoot}/.ai/` 目录存在；否则按 §11 中止。
 - 可读权威 Rule：`{skillLibraryRoot}/rules/health/project-ai-health-rule.md`、`{skillLibraryRoot}/rules/health/local-skill-capability-boundary-rule.md`。
-- 建议只读：`{skillLibraryRoot}/rules/pattern/pattern-validation-rule.md`、`{skillLibraryRoot}/rules/base/frontmatter-format-rule.md`、`{skillLibraryRoot}/rules/base/single-ai-context-directory-rule.md`、`{skillLibraryRoot}/rules/base/project-local-output-rule.md`、`{skillLibraryRoot}/rules/base/public-skill-library-purity-rule.md`、`{skillLibraryRoot}/rules/base/source-of-truth-rule.md`、`{skillLibraryRoot}/rules/documentation/agent-context-budget-rule.md`。
+- 建议只读：`{skillLibraryRoot}/rules/pattern/pattern-validation-rule.md`、`{skillLibraryRoot}/rules/base/frontmatter-format-rule.md`、`{skillLibraryRoot}/rules/base/single-ai-context-directory-rule.md`、`{skillLibraryRoot}/rules/base/project-local-output-rule.md`、`{skillLibraryRoot}/rules/base/public-skill-library-purity-rule.md`、`{skillLibraryRoot}/rules/base/source-of-truth-rule.md`、`{skillLibraryRoot}/rules/documentation/agent-context-budget-rule.md`、`{skillLibraryRoot}/rules/bootstrap/agent-default-entry-rule.md`、`{skillLibraryRoot}/rules/bootstrap/agent-entry-thin-adapter-rule.md`、`{skillLibraryRoot}/rules/bootstrap/hacf-version-compatibility-rule.md`、`{skillLibraryRoot}/rules/bootstrap/hacf-local-upgrade-rule.md`、`{skillLibraryRoot}/rules/bootstrap/hacf-upgrade-no-overwrite-rule.md`。
 - 两模板文件存在；否则中止（§11）。
 
 ## 6. 执行步骤
 
-按下列 **H1–H10** 领域逐项检查，每条发现须标注 **严重等级**（`critical` / `high` / `medium` / `low`）、**领域编号**、**证据路径**（相对 `{projectRoot}`，保持原文）。最后汇总计数、判定 `overallHealth` 与 `humanInterventionRequired`，**覆盖写入**两输出文件。
+按下列 **H1–H11** 领域逐项检查，每条发现须标注 **严重等级**（`critical` / `high` / `medium` / `low`）、**领域编号**、**证据路径**（相对 `{projectRoot}`，保持原文）。最后汇总计数、判定 `overallHealth` 与 `humanInterventionRequired`，**覆盖写入**两输出文件。
 
 ### H1 入口健康
 
@@ -57,10 +57,17 @@
 3. 验证 `{projectRoot}/.ai/entry/SKILLKIT_LINK.md` 存在；否则 **`critical`**（H1）。
 4. 解析 `{skillLibraryRoot}`（见 `check-project-readiness` §6 步骤 1）；验证 `{skillLibraryRoot}/ENTRY.md` 与 `{skillLibraryRoot}/VERSION.md` 存在。任一缺失：**阻塞类 `high`** 或 **`critical`**（若完全无法继续解析公共库根则 **`critical`**）（H1）。
 5. `AGENTS.md` 须含子串 `.ai/entry/AI_ENTRY.md` 或 `AI_ENTRY.md`；否则 **`high`**（H1）。
+6. **Agent 默认极薄入口（`agent-entry-policy.md` 驱动）**：
+   - 若 `.ai/config/agent-entry-policy.md` **不存在**：记 **`low`**（H1）一条，客观说明可运行 `skills/bootstrap/ensure-agent-default-entry.md` 生成 policy 与多 Agent 入口；**不得**因缺失 `CLAUDE.md` 或 Cursor Rule 单独升级至 `high`/`critical`。
+   - 若文件存在：解析 YAML；非法 YAML 记 **`high`**（H1）。
+   - 读取 `mandatoryAgents`（缺失或空数组表示**无**强制 Agent 专属入口）。
+   - 若 `mandatoryAgents` 含 `claude-code`：验证 `CLAUDE.md` 存在，且含成对 `<!-- HACF_AGENT_DEFAULT_ENTRY:BEGIN -->` / `<!-- HACF_AGENT_DEFAULT_ENTRY:END -->`，且其间或全文含 `AI_ENTRY.md` 或 `.ai/entry/AI_ENTRY.md`；任一不满足：**阻塞类 `high`**（H1）。若仅一侧标记或不成对：**阻塞类 `high`**（H1）（须人工整理，本 Skill 不修复）。
+   - 若 `mandatoryAgents` 含 `cursor`：取 `cursorRulePath`（缺省 `.cursor/rules/hacf.mdc`），验证该相对路径文件存在且满足与上条等价的标记与 `AI_ENTRY` 指针；不满足：**阻塞类 `high`**（H1）。
+   - **极薄启发式**：`CLAUDE.md` 或上述 Cursor Rule 若全文行数 **> 80** 或非受控区疑似整篇 Skill，记 **`medium`**（H1），提示人工对照 `agent-entry-thin-adapter-rule`。
 
 ### H2 单目录规范与 AGENTS 极薄
 
-1. 对照 `single-ai-context-directory-rule`：除允许的 `AGENTS.md` 外，AI 协作文档应集中在 `.ai/`；若在 `{projectRoot}` 根发现明显协作文档（如 `AI_NOTES.md`、`CODEX.md` 等，**仅报告不删除**），记 **`medium`** 或 **`high`**（依体积与是否重复 `.ai/` 内容）（H2）。
+1. 对照 `single-ai-context-directory-rule`：除允许的 `AGENTS.md`、符合 HACF 极薄的 `CLAUDE.md`、`.cursor/rules/` 下单文件 Cursor Rule 外，AI 协作文档应集中在 `.ai/`；若在 `{projectRoot}` 根发现明显协作文档（如 `AI_NOTES.md`、`CODEX.md` 等，**仅报告不删除**），记 **`medium`** 或 **`high`**（依体积与是否重复 `.ai/` 内容）（H2）。若存在 `CLAUDE.md` 且已满足 H1 中 HACF 受控区块与指针要求，**不得**仅因「根目录存在 CLAUDE.md」记为违规。
 2. `AGENTS.md` **极薄**启发式（保守）：若全文行数明显过多（例如 **> 200 行**）或「非受控区」含大量二级标题/ fenced 代码块疑似整篇 Skill，记 **`medium`**，并说明须**人工**对照 Rule 判断是否违规；**不得**擅自修改 `AGENTS.md`（H2）。
 
 ### H3 配置约束健康
@@ -75,6 +82,14 @@
 1. 只读尝试读取：`.ai/state/readiness.md`、`.ai/state/skillkit-status.md`、`.ai/state/onboarding-status.md`、`.ai/state/localization-level.md`。缺失不一律阻塞，但须在报告中列入对应领域（**`low`**–**`medium`**）（H4）。
 2. 若 `skillkit-status.md` 存在且 front matter 中 `projectState` 与 `readiness.md` 摘要明显矛盾，记 **`medium`**（H4）。
 3. 解析失败记 **`medium`** 并列出文件路径（H4）。
+
+### H4.1 框架版本与能力兼容（`hacf-version-status`）
+
+1. 读取 `{skillLibraryRoot}/capabilities/hacf-capabilities.yml` 是否存在；缺失记 **`high`**（H4.1）并提示公共库不完整。
+2. 读取 `.ai/state/hacf-version-status.md`：不存在记 **`medium`**（H4.1）（建议先运行 `check-hacf-version-compatibility`）。
+3. 若存在：解析 front matter `compatibilityStatus`。值为 `outdated` 记 **`high`（阻塞类 `high`）**（H4.1）：公共 Skill 与项目本地结构可能不同步，须先 `plan-hacf-local-upgrade` / `apply-hacf-local-upgrade`。值为 `unknown` 记 **`high`**（H4.1）。值为 `incompatible` 记 **`critical`**（H4.1）。
+4. 读取 `.ai/state/skillkit-status.md`：`localFrameworkVersion` 与 `libraryVersion` 若同时存在且不等，记 **`medium`**（H4.1）（须在检查或升级流程中收敛）。
+5. `{skillLibraryRoot}/VERSION.md` 首行与 `hacf-capabilities.yml` 中 `framework.currentVersion` 不一致，记 **`medium`**（H4.1）（公共库维护问题）。
 
 ### H5 文档健康（project / modules）
 
@@ -117,7 +132,7 @@
 ### H10 闭环状态与 localization-level
 
 1. 依据 `evaluate-localization-level` Skill §6 的证据链，核对 `state/localization-level.md` 中声明的 `localizationLevel`（`L0`–`L3`）是否与当前仓库事实一致；不一致记 **`medium`** 或 **`high`**（H10）。
-2. 列出各阶段产物缺口：`load`（链接）、`readiness`、`scan`（索引/scan-status）、`pattern`（active Pack）、`generation`（如 `pattern-code-generation-status.md` 可选）、`local skill`（`create-*.md` + `skill-index`）；缺口记 **`low`**–**`medium`**，若导致「宣称可执行但证据不足」则 **`high`**（H10）。
+2. 列出各阶段产物缺口：`load`（链接）、`readiness`、`hacf-version-status`（框架版本比对）、`agent-entry`（`agent-entry-status.md` / policy 与极薄多入口）、`scan`（索引/scan-status）、`pattern`（active Pack）、`generation`（如 `pattern-code-generation-status.md` 可选）、`local skill`（`create-*.md` + `skill-index`）；缺口记 **`low`**–**`medium`**，若导致「宣称可执行但证据不足」则 **`high`**（H10）。
 
 ### 汇总与写入
 
@@ -130,16 +145,17 @@
 
 | 路径（相对 `{projectRoot}/`，除非注明） | 说明 |
 |------------------------------------------|------|
-| `AGENTS.md` | 入口与极薄启发式 |
+| `AGENTS.md`、`CLAUDE.md`（若存在） | 入口与极薄启发式 |
 | `.ai/entry/AI_ENTRY.md`、`.ai/entry/SKILLKIT_LINK.md` | 入口 |
+| `.ai/config/agent-entry-policy.md`、`.ai/state/agent-entry-status.md` | Agent 默认入口策略与执行记录 |
 | `.ai/config/**/*.md` | 配置约束 |
-| `.ai/state/readiness.md`、`skillkit-status.md`、`onboarding-status.md`、`localization-level.md` | 状态；及其它存在的 `state/*.md` 供 H10 可选引用 |
+| `.ai/state/readiness.md`、`skillkit-status.md`、`onboarding-status.md`、`localization-level.md`、`hacf-version-status.md` | 状态；及其它存在的 `state/*.md` 供 H10 可选引用 |
 | `.ai/docs/project/**`、`.ai/docs/modules/**` | 文档健康 |
 | `.ai/indexes/*.md` | 索引 |
 | `.ai/pattern-packs/**` | Pack 四文件 |
 | `.ai/skills/project-local/*.md` | 项目本地 Skill |
 | `.ai/state/pattern-validation-status.md` | 可选交叉引用 |
-| `{skillLibraryRoot}/ENTRY.md`、`VERSION.md` | 公共库解析验证 |
+| `{skillLibraryRoot}/ENTRY.md`、`VERSION.md`、`capabilities/hacf-capabilities.yml` | 公共库解析与能力声明 |
 | `{skillLibraryRoot}/rules/**` | 按需只读 |
 
 **禁止**为检查目的批量深读业务源码树；路径存在性检查以文件系统 `exists` 为准。
@@ -154,7 +170,7 @@
 | 禁止 |
 |------|
 | 修改 `{projectRoot}` 下业务源码 |
-| 修改 `{projectRoot}/AGENTS.md` |
+| 修改 `{projectRoot}/AGENTS.md`、`CLAUDE.md`、`.cursor/rules/` 下由 policy 声明之 Cursor Rule 文件 |
 | 修改 `{projectRoot}/.ai/` 下除上表两文件外的任意文件 |
 | 写入或修改 `{skillLibraryRoot}/**` |
 | 自动修复（包括但不限于 front matter、索引、Pack、Skill） |
@@ -172,7 +188,7 @@
 - [ ] `project-ai-health-report.md` 已写入，含 YAML front matter，且正文含：**总体结论**、**阻塞项**、**按严重等级分类的问题清单**、**可用能力判断**、**建议修复顺序**、**是否需要人工处理**。  
 - [ ] `project-ai-health-status.md` 已写入，front matter 含 `lastProjectAiHealthCheckAt`、`overallHealth`、各计数、`humanInterventionRequired`、`blockingIssuesCount`。  
 - [ ] `overallHealth` 与 `project-ai-health-rule` 定义一致。  
-- [ ] 未修改源码、未修改 `AGENTS.md`、未修改公共库。
+- [ ] 未修改源码、未修改 `AGENTS.md` / `CLAUDE.md` / Cursor Project Rule、未修改公共库。
 
 ## 11. 失败处理
 

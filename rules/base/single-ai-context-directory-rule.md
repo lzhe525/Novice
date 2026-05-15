@@ -14,16 +14,20 @@
 
 允许在 `{projectRoot}/AGENTS.md` 存在**极薄**入口内容（指针、短约束、受控区块），**不得**在 `AGENTS.md` 中存放完整 Skill 正文、扫描结果、Pattern 或大段项目文档。
 
+允许在 `{projectRoot}/CLAUDE.md`（Claude Code）与 `{projectRoot}/.cursor/rules/` 下单个 **HACF 极薄** Project Rule 文件（默认 `hacf.mdc`）中，仅含**指针级**说明与 `<!-- HACF_AGENT_DEFAULT_ENTRY:BEGIN -->` … `END` 受控区块，指向 `.ai/entry/AI_ENTRY.md` 或根目录 `AGENTS.md`（后者须已含 `AI_ENTRY.md` 引用）。**禁止**在上述文件中承载本应属于 `.ai/` 的长篇协作文档、扫描结果或 Pattern 全文。
+
 ## 允许路径（MVP 汇总）
 
 - `{projectRoot}/AGENTS.md`
+- `{projectRoot}/CLAUDE.md`（仅 HACF 极薄受控约定时）
+- `{projectRoot}/.cursor/rules/hacf.mdc`（或 `agent-entry-policy.md` 声明的同等极薄单文件）
 - `{projectRoot}/.ai/entry/*`（本阶段由 Bootstrap 模板生成的文件）
 - `{projectRoot}/.ai/state/*`
 - `{projectRoot}/.ai/config/*`（本阶段仅 `language-policy.md` 等 Bootstrap 产物）
 
 ## 禁止路径
 
-- 在 `{projectRoot}` 根下创建 `AI_NOTES.md`、`CODEX.md`、`.cursor/rules` 内承载本应属于 `.ai/` 的长篇协作文档（MVP 未要求迁移既有工具配置时，**不要新建**与 `.ai/` 重复的框架文档）。
+- 在 `{projectRoot}` 根下创建 `AI_NOTES.md`、`CODEX.md` 等承载本应属于 `.ai/` 的长篇协作文档；在 `.cursor/rules/` 内新建**非** HACF 极薄受控区块的重复框架长文（MVP 未要求迁移既有工具配置时，**不要新建**与 `.ai/` 重复内容的规则文件）。
 - 将扫描报告、索引写入 `src/` 或项目根（除非用户明确要求修改源码且不属于「AI 协作文档」范畴）。
 
 ## 与其它 Rule 的关系

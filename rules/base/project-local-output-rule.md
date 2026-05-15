@@ -19,6 +19,13 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 - `{projectRoot}/.ai/state/readiness.md`
 - `{projectRoot}/.ai/config/language-policy.md`
 
+**Agent 默认极薄入口适配**在仅执行 `skills/bootstrap/ensure-agent-default-entry.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致；**仅**合并 `<!-- HACF_AGENT_DEFAULT_ENTRY:BEGIN -->` … `END` 受控区块或编排 `create-or-update-agents-md`，不得整文件覆盖用户自有内容）：
+
+- `{projectRoot}/CLAUDE.md`（Claude Code 极薄入口）
+- `{projectRoot}/.cursor/rules/hacf.mdc`（或该项目 `agent-entry-policy.md` 中 `cursorRulePath` 声明的**单文件** Cursor Project Rule，文件名默认 `hacf.mdc`；可自动创建 `.cursor/rules/` 目录）
+- `{projectRoot}/.ai/state/agent-entry-status.md`
+- `{projectRoot}/.ai/config/agent-entry-policy.md`
+
 **引导式项目接入（Bootstrap）**在仅执行 `skills/bootstrap/guide-project-onboarding.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
 
 - `{projectRoot}/.ai/state/onboarding-status.md`

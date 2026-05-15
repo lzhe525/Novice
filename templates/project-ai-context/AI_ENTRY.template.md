@@ -14,6 +14,8 @@ generatedAt: {{GENERATED_AT_ISO}}
 3. `../config/language-policy.md`（语言策略；须人工确认后 `reviewedByHuman: true`）
 4. `../state/readiness.md`（就绪检查结果）
 5. `../state/skillkit-status.md`（库版本与状态摘要）
+6. `../config/agent-entry-policy.md`（可选；多 Agent 极薄入口策略）
+7. `../state/agent-entry-status.md`（可选；最近一次 `ensure-agent-default-entry` 摘要）
 
 ## 公共库内关键路径（相对 `{skillLibraryRoot}`）
 
@@ -25,6 +27,7 @@ generatedAt: {{GENERATED_AT_ISO}}
 | 更新根入口 | `skills/bootstrap/create-or-update-agents-md.md` |
 | 初始化 `.ai` | `skills/bootstrap/initialize-project-ai-context.md` |
 | 就绪检查 | `skills/bootstrap/check-project-readiness.md` |
+| Agent 默认极薄入口（多工具链） | `skills/bootstrap/ensure-agent-default-entry.md` |
 | Skill 路由表 | `routers/SKILL_ROUTER.md` |
 | 基础 Rule | `rules/base/public-skill-library-purity-rule.md` 等 |
 | Markdown front matter 格式 | `rules/base/frontmatter-format-rule.md` |
@@ -41,6 +44,6 @@ generatedAt: {{GENERATED_AT_ISO}}
 
 ## 能力范围提示
 
-- **Bootstrap**：`.ai/entry`、`state`、`config` 与根目录 `AGENTS.md` 由 Bootstrap 系列 Skill 维护；就绪检查仍以 `check-project-readiness` 为准。
+- **Bootstrap**：`.ai/entry`、`state`、`config`、根目录 `AGENTS.md` 及（按需）`CLAUDE.md`、Cursor Project Rule 由 Bootstrap / `ensure-agent-default-entry` 等 Skill 维护；就绪检查仍以 `check-project-readiness` 为准。
 - **扫盘（第二阶段）**：公共库提供 `skills/scan/` 下 Skill；**所有**生成文档仅可写入 `{projectRoot}/.ai/docs/**`。**源码为事实源**，文档为辅助上下文。
-- **未提供**：Pattern、Placement、`develop`、`review`、框架升级等 Skill；若任务需要，请使用项目本地 Skill 或等待后续公共库版本。
+- **未提供**：Placement、`develop`、`review`、框架升级等 Skill；Pattern 能力见公共库 `skills/pattern/**` 与 `SKILL_ROUTER`；若任务需要，请使用项目本地 Skill 或等待后续公共库版本。

@@ -8,12 +8,16 @@
 
 | 任务意图（中文） | Skill 路径 | 说明 |
 |------------------|------------|------|
-| 将公共库接入当前项目、建立 `.ai/` 与极薄 `AGENTS.md` | `skills/bootstrap/load-skill-library.md` | 编排子 Skill，完成 Bootstrap 最小闭环 |
+| 将公共库接入当前项目、建立 `.ai/`、极薄 `AGENTS.md` / `CLAUDE.md` / Cursor Rule、就绪检查与**框架版本兼容状态** | `skills/bootstrap/load-skill-library.md` | 编排子 Skill（含 `ensure-agent-default-entry`、`check-hacf-version-compatibility`），完成 Bootstrap 最小闭环 |
 | 仅创建或更新项目根 `AGENTS.md`（极薄入口或 AI-SKILLKIT 区块） | `skills/bootstrap/create-or-update-agents-md.md` | 不触碰 `.ai/` 内其它文件 |
 | 仅初始化项目 `.ai/entry/`、`.ai/state/`、`.ai/config/` 及模板实例化文件 | `skills/bootstrap/initialize-project-ai-context.md` | 不创建 `docs/`、`indexes/` 等非 MVP 目录 |
 | 检查 Bootstrap 就绪情况并引导人工确认语言策略 | `skills/bootstrap/check-project-readiness.md` | 写入 `.ai/state/readiness.md`，更新状态 |
 | 引导式完成 HACF 项目接入落地流程（分阶段、人工门控、维护 `onboarding-*.md`） | `skills/bootstrap/guide-project-onboarding.md` | 编排 `load-skill-library` / 子 Skill；**不**进入 Scan / Pattern / Develop；与 `load-skill-library` 相比偏「逐步向导」 |
 | 根据当前项目状态推荐下一步应执行的 Skill（只读） | `skills/bootstrap/recommend-next-onboarding-step.md` | 读取 `.ai/state/onboarding-status.md` 等；**不**写入文件；可在 `guide-project-onboarding` 完成后独立调用 |
+| 检查并生成各 Agent 极薄默认入口（`AGENTS.md` / `CLAUDE.md` / Cursor Rule）、更新 `agent-entry-status.md` | `skills/bootstrap/ensure-agent-default-entry.md` | 编排 `create-or-update-agents-md`；受控区块 `HACF_AGENT_DEFAULT_ENTRY`；**不**改公共库与业务源码 |
+| 比对公共 HACF 与项目 `localFrameworkVersion` / 声明文件，写入 `.ai/state/hacf-version-status.md` | `skills/bootstrap/check-hacf-version-compatibility.md` | 读取 `VERSION.md`、`capabilities/hacf-capabilities.yml`、`SKILLKIT_LINK.md`、`skillkit-status.md`；**不**改公共库 |
+| 生成项目本地框架升级计划（只写 `.ai/reports/hacf-version-upgrade-plan.md`） | `skills/bootstrap/plan-hacf-local-upgrade.md` | 须已有兼容检查结论；**不**自动补缺、不执行 apply |
+| 在人类确认计划后仅补齐缺失框架文件（冲突写 `hacf-version-upgrade-conflicts.md`） | `skills/bootstrap/apply-hacf-local-upgrade.md` | **须**用户明确同意；遵守 `hacf-upgrade-no-overwrite-rule`；成功后写 `hacf-version-upgrade-result.md` 并刷新版本状态 |
 
 ## Scan（第二阶段）
 
@@ -68,4 +72,4 @@
 
 ## 未提供的能力
 
-Placement、`skills/develop/**`、`skills/review/**`、框架升级类 Skill 等**不在**本表范围内（本表已列出的 Pattern / 生成复盘 / 项目本地 Skill 能力除外）；`review-pattern-code-generation` 仅为 **Pattern 代码生成复盘**，**不是** `skills/review/**`；Agent 应停止或改用项目本地 `.ai/skills/project-local/`（若存在）。
+Placement、`skills/develop/**`、`skills/review/**` 等**不在**本表范围内（本表已列出的 Pattern / 生成复盘 / 项目本地 Skill / **框架跨版本对齐**三条 Bootstrap Skill 除外）；`review-pattern-code-generation` 仅为 **Pattern 代码生成复盘**，**不是** `skills/review/**`；Agent 应停止或改用项目本地 `.ai/skills/project-local/`（若存在）。

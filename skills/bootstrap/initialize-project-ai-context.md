@@ -65,8 +65,8 @@
    - 写入 `{projectRoot}/.ai/entry/AI_ENTRY.md`（若已存在且无「强制重置」指令，则跳过覆盖）。
 5. **实例化 `skillkit-status.md`**：
    - 读取 `{skillLibraryRoot}/templates/project-ai-context/skillkit-status.template.md`，替换 `{{SKILLKIT_VERSION}}`、`{{GENERATED_AT_ISO}}`（所有出现处）。
-   - 若 `{projectRoot}/.ai/state/skillkit-status.md` 不存在：写入新文件。
-   - 若已存在：由调用方（如 `load-skill-library`）决定是否覆盖；本 Skill 默认**更新** YAML front matter 中 `libraryVersion` 与 `linkedAt` 字段为当前值，保留其它行人类编辑（若解析失败则整体覆盖为模板实例，并在回复声明）。
+   - 若 `{projectRoot}/.ai/state/skillkit-status.md` 不存在：写入新文件（`localFrameworkVersion` 与 `libraryVersion` 均等于 `{{SKILLKIT_VERSION}}`）。
+   - 若已存在：由调用方（如 `load-skill-library`）决定是否覆盖；本 Skill 默认**更新** YAML front matter 中 `libraryVersion` 与 `linkedAt` 字段为当前值；对 `localFrameworkVersion`：**若**原文件中该键缺失，则补为 `{{SKILLKIT_VERSION}}`；**若**已存在，则**不得降低**：仅当 `{{SKILLKIT_VERSION}}` 与旧值相同，或 Agent 可依据 `{skillLibraryRoot}/capabilities/hacf-capabilities.yml` 的 `versionOrder` 判定新版本**不旧于**旧值时，才将 `localFrameworkVersion` 更新为 `{{SKILLKIT_VERSION}}`；否则保留原值。保留其它行人类编辑（若解析失败则整体覆盖为模板实例，并在回复声明）。
 6. **实例化 `language-policy.md`**：
    - 若 `{projectRoot}/.ai/config/language-policy.md` **不存在**：读取 `{skillLibraryRoot}/templates/config/language-policy.template.md`，**不**替换正文内说明性占位；直接写入，确保 front matter 含 `reviewedByHuman: false`、`status: draft`。
    - 若已存在：读取 front matter；若 `reviewedByHuman: true`，**不得覆盖**；若为 `false` 或无法解析，且用户未要求保留草稿，可将缺失字段补全但**不得**将 `reviewedByHuman` 改为 `true`（须由人类确认）。

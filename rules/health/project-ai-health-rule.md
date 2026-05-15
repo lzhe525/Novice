@@ -8,8 +8,8 @@
 
 ### 只读与写入边界
 
-1. 健康检查 Skill **默认只读**：可读取 `{projectRoot}` 下 `AGENTS.md`、`.ai/**` 及解析得到的 `{skillLibraryRoot}/**`（仅用于校验 `ENTRY.md`、`VERSION.md`、公共 Skill 路径存在性等）。
-2. **不得**修改业务源码、**不得**修改 `AGENTS.md`、**不得**自动修复任何发现问题、**不得**修改 `{skillLibraryRoot}/**`。
+1. 健康检查 Skill **默认只读**：可读取 `{projectRoot}` 下 `AGENTS.md`、`CLAUDE.md`、`.cursor/rules/` 下 Project Rule 单文件（若存在）、`.ai/**` 及解析得到的 `{skillLibraryRoot}/**`（仅用于校验 `ENTRY.md`、`VERSION.md`、`capabilities/hacf-capabilities.yml`、公共 Skill 路径存在性等）。
+2. **不得**修改业务源码、**不得**修改 `AGENTS.md`、`CLAUDE.md`、`.cursor/rules/` 下 Project Rule 文件、**不得**自动修复任何发现问题、**不得**修改 `{skillLibraryRoot}/**`。
 3. **仅允许**写入下列两路径（可自动创建 `.ai/reports/`、`.ai/state/`）：
    - `{projectRoot}/.ai/reports/project-ai-health-report.md`
    - `{projectRoot}/.ai/state/project-ai-health-status.md`
@@ -25,12 +25,12 @@
 
 | 等级 | 含义 | 典型情形（非穷尽） |
 |------|------|-------------------|
-| `critical` | 框架不可信或不可安全执行；须先处理 | 缺失 `SKILLKIT_LINK.md` 或无法解析公共库根；`AGENTS.md` 或入口缺失导致无法发现 `.ai/`；正文明确指示将项目内容写入公共 HACF 库；`status: active` 的配置或 Pattern/项目本地 Skill 在 `reviewedByHuman` 非 `true` 时仍宣称可执行写操作 |
-| `high` | 高风险；强烈建议在继续自动化前修复 | 合法 YAML 但 `active` 且缺 `confidence: confirmed` 或缺人工审阅；索引与磁盘上 Pack/Skill 严重不一致；`dependsOn` 声明缺失或指向不存在；`allowedWriteScopes` 过度泛化；高风险区可写但无计划门控与人工确认 |
+| `critical` | 框架不可信或不可安全执行；须先处理 | 缺失 `SKILLKIT_LINK.md` 或无法解析公共库根；`AGENTS.md` 或入口缺失导致无法发现 `.ai/`；正文明确指示将项目内容写入公共 HACF 库；`status: active` 的配置或 Pattern/项目本地 Skill 在 `reviewedByHuman` 非 `true` 时仍宣称可执行写操作；`.ai/state/hacf-version-status.md` 中 `compatibilityStatus` 为 `incompatible`（见 `check-project-ai-health` H4.1） |
+| `high` | 高风险；强烈建议在继续自动化前修复 | 合法 YAML 但 `active` 且缺 `confidence: confirmed` 或缺人工审阅；索引与磁盘上 Pack/Skill 严重不一致；`dependsOn` 声明缺失或指向不存在；`allowedWriteScopes` 过度泛化；高风险区可写但无计划门控与人工确认；`agent-entry-policy.md` 中 `mandatoryAgents` 要求 `claude-code` 或 `cursor` 但对应极薄入口缺失、标记不成对或缺少 `AI_ENTRY` 指针（见 `check-project-ai-health` H1） |
 | `medium` | 影响可维护性或一致性；应计划修复 | 文档/索引空壳、截断的路径校验、`stale`/`unknown` 标记；`localization-level` 与证据链不符；缺「失败处理」类小节但边界尚可接受 |
 | `low` | 信息类或优化建议 | 可选文件缺失、轻微结构建议、非阻塞的待确认项提示 |
 
-**阻塞项（blocking）**：所有 `critical` 项，以及 Rule 中显式定义为阻塞的 `high` 项（例如：`SKILLKIT_LINK` 可解析但 `ENTRY.md`/`VERSION.md` 缺失；`active` 的 Pattern Pack 或项目本地 Skill 未 `reviewedByHuman: true`）。
+**阻塞项（blocking）**：所有 `critical` 项，以及 Rule 中显式定义为阻塞的 `high` 项（例如：`SKILLKIT_LINK` 可解析但 `ENTRY.md`/`VERSION.md` 缺失；`active` 的 Pattern Pack 或项目本地 Skill 未 `reviewedByHuman: true`；`agent-entry-policy.md` 中 `mandatoryAgents` 含 `claude-code` 或 `cursor` 但对应极薄入口未满足 `check-project-ai-health` H1 子项之**阻塞类 high** 条件；`.ai/state/hacf-version-status.md` 中 `compatibilityStatus` 为 `outdated` 之 **H4.1 阻塞类 high** 项）。
 
 ### 总体健康度（overallHealth）
 
@@ -50,8 +50,8 @@
 
 1. **总体结论**（含 `overallHealth` 一句话摘要）
 2. **阻塞项**（若无则写「无」）
-3. **按严重等级分类的问题清单**（建议表格：严重等级、领域编号 H1–H10、说明、证据路径）
-4. **可用能力判断**（对 scan、`validate-pattern-pack`、`create-code-by-pattern`、项目本地 Skill 等给出 `pass` / `conditional` / `blocked` 及一句理由）
+3. **按严重等级分类的问题清单**（建议表格：严重等级、领域编号 H1–H11、说明、证据路径）
+4. **可用能力判断**（对 scan、`validate-pattern-pack`、`create-code-by-pattern`、项目本地 Skill、`ensure-agent-default-entry`（Agent 极薄多入口）、`check-hacf-version-compatibility` / `plan-hacf-local-upgrade` / `apply-hacf-local-upgrade`（框架跨版本对齐）等给出 `pass` / `conditional` / `blocked` 及一句理由）
 5. **建议修复顺序**（有序列表：先解阻塞，再降 `high`、`medium`）
 6. **是否需要人工处理**（与 `humanInterventionRequired` 一致并简述理由）
 
@@ -68,6 +68,10 @@
 - `rules/base/public-skill-library-purity-rule.md`
 - `rules/base/source-of-truth-rule.md`
 - `rules/documentation/agent-context-budget-rule.md`
+- `rules/bootstrap/agent-default-entry-rule.md`
+- `rules/bootstrap/agent-entry-thin-adapter-rule.md`
+- `rules/bootstrap/hacf-version-compatibility-rule.md`
+- `rules/bootstrap/hacf-local-upgrade-rule.md`
 - `rules/health/local-skill-capability-boundary-rule.md`（项目本地 Skill 与风险子项）
 - `rules/pattern/pattern-validation-rule.md`（Pack 子项校验语义）
 
