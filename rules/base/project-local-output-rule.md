@@ -76,6 +76,14 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 - `{projectRoot}/.ai/state/doc-impact-status.md`
 - `{projectRoot}/.ai/docs/**`、`{projectRoot}/.ai/indexes/**`、`{projectRoot}/.ai/pattern-packs/**`、`{projectRoot}/.ai/skills/project-local/**` 下的 Markdown，**仅当**该相对路径已列入执行时所依据的 `{projectRoot}/.ai/reports/doc-impact-report.md` 正文「建议更新清单」表格（或该 Skill 认可的等价结构化列表）且变更类型符合 `doc-update-policy-rule`；**不得**据此 Skill 写入未列入清单的路径。
 
+**方案与文档对齐拷问**在仅执行 `skills/docs/grill-with-project-docs.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/docs/project/design-grill-notes.md`（**仅当**用户明确要求固化结论且该 Skill 已执行写盘步骤；**不得**据此 Skill 覆盖或整份重写 `overview.md`、`deep-dive.md`、`adapter.md`、`adapter-evidence.md` 等扫盘主文档）
+
+**会话交接**在仅执行 `skills/productivity/create-agent-handoff.md` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/state/agent-handoff.md`
+
 **不得**在 `.ai/` 外散落上述扫盘产物。
 
 不在上列且非用户显式要求的源码修改，**不得**新建。

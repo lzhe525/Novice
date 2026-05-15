@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4]
+
+- 新增 **Docs**：`skills/docs/grill-with-project-docs.md`（对照 `.ai` 文档拷问、对齐方案；可选写入 `.ai/docs/project/design-grill-notes.md`）。
+- 新增 **Productivity**：`skills/productivity/create-agent-handoff.md`（固定覆盖 `.ai/state/agent-handoff.md` 的会话交接）。
+- 新增 **Rule**：`rules/skill/skill-description-trigger-rule.md`（公共 Skill 目的/触发描述与纯度约束）。
+- 更新 `routers/SKILL_ROUTER.md`、`rules/base/project-local-output-rule.md`（登记 Router 与上述 `.ai/` 写入白名单）。
+
 ## [0.2.3]
 
 - Pattern 第三阶段扩展：`skills/pattern/extract-code-pattern.md`（从样例抽象 Pack 四文件）；`create-code-by-pattern.md`（受控改源码）；`review-pattern-code-generation.md`；`promote-project-local-skill.md`、`activate-project-local-skill.md`（项目本地 Skill 草稿与激活）。
