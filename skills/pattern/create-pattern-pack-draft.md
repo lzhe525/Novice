@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 创建 Pattern Pack 草稿四文件骨架。
+triggerWhen:
+  - Pattern Pack 草稿
+  - create pattern pack draft
+---
 # Skill：create-pattern-pack-draft
 
 ## 1. 目的

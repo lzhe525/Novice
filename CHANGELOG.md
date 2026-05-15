@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6]
+
+- 新增 **Skill 路由体系**：`skills/router/select-skill-for-task.md`（任务预检编排）、`validate-skill-routing.md`、`register-new-skill.md`；`routers/TASK_TRIGGER_MATRIX.md`（Available / Planned 信号矩阵）。
+- 新增 **Routing Rule**（`rules/routing/`）：`skill-routing-preflight-rule`、`mandatory-skill-trigger-rule`、`skill-route-enabled-rule`、`new-skill-registration-rule`、`skill-routing-validation-rule`。
+- 为公共库全部 Skill 补充 YAML front matter（`status`、`routeEnabled`、`description`、`triggerWhen`）；`routeEnabled: true` 的 Available 触发项：`grill-with-project-docs`、`create-agent-handoff`、`create-code-by-pattern`、`check-doc-impact-after-change`。
+- 更新 `routers/SKILL_ROUTER.md`、`templates/project-ai-context/AI_ENTRY.template.md`、极薄入口模板（`AGENTS` / `CLAUDE` / Cursor Rule）与 `rules/base/project-local-output-rule.md`（允许 `last-skill-routing.md`）。
+
 ## [0.2.5]
 
 - 新增 **框架版本兼容与项目本地升级**：`capabilities/hacf-capabilities.yml`；Bootstrap `check-hacf-version-compatibility`、`plan-hacf-local-upgrade`、`apply-hacf-local-upgrade`；状态/报告模板与 `rules/bootstrap/hacf-*-rule.md` 三条。

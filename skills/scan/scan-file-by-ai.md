@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 单文件 AI 扫盘。
+triggerWhen:
+  - 文件扫盘
+  - scan file
+---
 # Skill：scan-file-by-ai
 
 ## 1. 目的

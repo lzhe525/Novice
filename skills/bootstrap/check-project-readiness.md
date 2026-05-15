@@ -1,3 +1,12 @@
+---
+status: active
+routeEnabled: false
+description: 检查 Bootstrap 就绪情况并引导人工确认语言策略。
+triggerWhen:
+  - 就绪检查
+  - readiness
+---
+
 # Skill：check-project-readiness
 
 ## 1. 目的

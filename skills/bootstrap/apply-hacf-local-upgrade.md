@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 在人类确认后补齐缺失框架文件。
+triggerWhen:
+  - 应用升级
+  - apply hacf upgrade
+---
 # Skill：apply-hacf-local-upgrade
 
 ## 1. 目的

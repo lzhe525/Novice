@@ -3,7 +3,7 @@
 
 framework:
   name: HACF
-  currentVersion: "0.2.5"
+  currentVersion: "0.2.6"
 
 # 能力声明 schema 版本；供 hacf-version-status 等文件引用，与 Git tag 无关。
 schemaVersion: 1
@@ -12,6 +12,7 @@ schemaVersion: 1
 versionOrder:
   - "0.2.4"
   - "0.2.5"
+  - "0.2.6"
 
 # 能力定义：id 在 versions.*.requiredProjectCapabilities 中引用。
 capabilityDefinitions:
@@ -45,6 +46,18 @@ versions:
       - .ai/state/skillkit-status.md
       - .ai/config/language-policy.md
   "0.2.5":
+    requiredProjectCapabilities:
+      - bootstrap_min_entry
+      - bootstrap_min_state
+      - bootstrap_min_config
+      - framework_version_status
+    requiredFiles:
+      - .ai/entry/SKILLKIT_LINK.md
+      - .ai/entry/AI_ENTRY.md
+      - .ai/state/skillkit-status.md
+      - .ai/config/language-policy.md
+      - .ai/state/hacf-version-status.md
+  "0.2.6":
     requiredProjectCapabilities:
       - bootstrap_min_entry
       - bootstrap_min_state

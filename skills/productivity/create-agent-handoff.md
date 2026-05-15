@@ -1,3 +1,13 @@
+---
+status: active
+routeEnabled: true
+description: 将会话上下文压缩为交接文档供下一 Agent 续写。
+triggerWhen:
+  - 交接
+  - handoff
+  - 切换 Agent
+  - 会话总结
+---
 # Skill：create-agent-handoff
 
 ## 1. 目的

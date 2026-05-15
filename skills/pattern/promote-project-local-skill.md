@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 将 Pattern 生成流程沉淀为项目本地 Skill 草稿。
+triggerWhen:
+  - 晋升项目本地 Skill
+  - promote project local skill
+---
 # Skill：promote-project-local-skill
 
 ## 1. 目的

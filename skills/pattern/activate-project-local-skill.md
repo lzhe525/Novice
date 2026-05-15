@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 激活项目本地 Skill 并维护 skill-index。
+triggerWhen:
+  - 激活项目本地 Skill
+  - activate project local skill
+---
 # Skill：activate-project-local-skill
 
 ## 1. 目的

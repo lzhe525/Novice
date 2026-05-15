@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 人工确认后将 Pattern Pack 从 draft 激活为 active。
+triggerWhen:
+  - 激活 Pattern Pack
+  - activate pattern pack
+---
 # Skill：activate-pattern-pack
 
 ## 1. 目的

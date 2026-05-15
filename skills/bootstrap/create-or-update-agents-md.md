@@ -1,3 +1,12 @@
+---
+status: active
+routeEnabled: false
+description: 创建或更新项目根极薄 AGENTS.md 或 AI-SKILLKIT 区块。
+triggerWhen:
+  - 更新 AGENTS.md
+  - 极薄入口
+---
+
 # Skill：create-or-update-agents-md
 
 ## 1. 目的

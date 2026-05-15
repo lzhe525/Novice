@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 复盘 Pattern 代码生成计划与结果（只读）。
+triggerWhen:
+  - Pattern 生成复盘
+  - review pattern code
+---
 # Skill：review-pattern-code-generation
 
 ## 1. 目的

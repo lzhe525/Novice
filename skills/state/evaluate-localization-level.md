@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 评估并更新项目本地化等级与 SkillKit 摘要。
+triggerWhen:
+  - 本地化等级
+  - localization level
+---
 # Skill：evaluate-localization-level
 
 ## 1. 目的

@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 识别模块内候选代码类型并写入索引。
+triggerWhen:
+  - 代码类型识别
+  - detect code types
+---
 # Skill：detect-code-types-by-ai
 
 ## 1. 目的

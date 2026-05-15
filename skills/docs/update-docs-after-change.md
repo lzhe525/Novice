@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 依据 doc-impact 报告定点更新 .ai/ 内文档。
+triggerWhen:
+  - 更新文档
+  - update docs after change
+---
 # Skill：update-docs-after-change
 
 ## 1. 目的

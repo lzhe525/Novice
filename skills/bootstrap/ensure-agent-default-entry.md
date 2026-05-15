@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 检查并生成各 Agent 极薄默认入口。
+triggerWhen:
+  - Agent 入口
+  - ensure agent entry
+---
 # Skill：ensure-agent-default-entry
 
 ## 1. 目的

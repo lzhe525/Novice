@@ -91,6 +91,10 @@ Bootstrap 阶段**已定义**、允许创建或更新的项目侧文件包括：
 
 - `{projectRoot}/.ai/state/agent-handoff.md`
 
+**Skill 路由预检**在仅执行 `skills/router/select-skill-for-task.md` 且 `{writeRoutingState}` 为 `true` 时，允许在下列路径创建或更新文档（须与该 Skill「写入位置」节一致）：
+
+- `{projectRoot}/.ai/state/last-skill-routing.md`
+
 **不得**在 `.ai/` 外散落上述扫盘产物。
 
 不在上列且非用户显式要求的源码修改，**不得**新建。

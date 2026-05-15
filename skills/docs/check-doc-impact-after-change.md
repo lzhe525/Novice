@@ -1,3 +1,12 @@
+---
+status: active
+routeEnabled: true
+description: 改码后只读判断对 .ai/ 文档体系的影响。
+triggerWhen:
+  - 改码后文档影响
+  - doc impact
+  - 文档是否需同步
+---
 # Skill：check-doc-impact-after-change
 
 ## 1. 目的

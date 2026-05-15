@@ -1,3 +1,13 @@
+---
+status: active
+routeEnabled: false
+description: 将 HACF 公共 Skill 库以只读方式接入项目，编排 Bootstrap 最小闭环。
+triggerWhen:
+  - 接入 HACF
+  - load skill library
+  - Bootstrap
+---
+
 # Skill：load-skill-library
 
 ## 1. 目的

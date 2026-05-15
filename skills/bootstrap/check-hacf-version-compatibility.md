@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 比对公共 HACF 与项目框架版本兼容状态。
+triggerWhen:
+  - 版本兼容
+  - hacf version
+---
 # Skill：check-hacf-version-compatibility
 
 ## 1. 目的

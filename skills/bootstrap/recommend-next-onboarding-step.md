@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 根据项目状态推荐下一步应执行的 Skill（只读）。
+triggerWhen:
+  - 推荐下一步
+  - onboarding 推荐
+---
 # Skill：recommend-next-onboarding-step
 
 ## 1. 目的

@@ -1,3 +1,13 @@
+---
+status: active
+routeEnabled: true
+description: 对照 .ai 文档拷问与对齐方案。
+triggerWhen:
+  - 拷问
+  - 对齐
+  - 压力测试方案
+  - 术语模糊
+---
 # Skill：grill-with-project-docs
 
 ## 1. 目的

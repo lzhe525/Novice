@@ -11,11 +11,12 @@ generatedAt: {{GENERATED_AT_ISO}}
 
 1. 本文件（当前页）
 2. 同目录 `SKILLKIT_LINK.md`（解析 `{skillLibraryRoot}`）
-3. `../config/language-policy.md`（语言策略；须人工确认后 `reviewedByHuman: true`）
-4. `../state/readiness.md`（就绪检查结果）
-5. `../state/skillkit-status.md`（库版本与状态摘要）
-6. `../config/agent-entry-policy.md`（可选；多 Agent 极薄入口策略）
-7. `../state/agent-entry-status.md`（可选；最近一次 `ensure-agent-default-entry` 摘要）
+3. **任务开始前**：公共库 `skills/router/select-skill-for-task.md`（Skill 路由预检；可选写入 `../state/last-skill-routing.md`）
+4. `../config/language-policy.md`（语言策略；须人工确认后 `reviewedByHuman: true`）
+5. `../state/readiness.md`（就绪检查结果）
+6. `../state/skillkit-status.md`（库版本与状态摘要）
+7. `../config/agent-entry-policy.md`（可选；多 Agent 极薄入口策略）
+8. `../state/agent-entry-status.md`（可选；最近一次 `ensure-agent-default-entry` 摘要）
 
 ## 公共库内关键路径（相对 `{skillLibraryRoot}`）
 
@@ -29,6 +30,10 @@ generatedAt: {{GENERATED_AT_ISO}}
 | 就绪检查 | `skills/bootstrap/check-project-readiness.md` |
 | Agent 默认极薄入口（多工具链） | `skills/bootstrap/ensure-agent-default-entry.md` |
 | Skill 路由表 | `routers/SKILL_ROUTER.md` |
+| 任务信号触发矩阵 | `routers/TASK_TRIGGER_MATRIX.md` |
+| 任务 Skill 路由预检 | `skills/router/select-skill-for-task.md` |
+| Skill 路由预检 Rule | `rules/routing/skill-routing-preflight-rule.md` |
+| 强制 Skill 触发 Rule | `rules/routing/mandatory-skill-trigger-rule.md` |
 | 基础 Rule | `rules/base/public-skill-library-purity-rule.md` 等 |
 | Markdown front matter 格式 | `rules/base/frontmatter-format-rule.md` |
 | 项目级扫盘 | `skills/scan/scan-project-by-ai.md` |
@@ -41,6 +46,14 @@ generatedAt: {{GENERATED_AT_ISO}}
 
 - `{projectRoot}`：含本文件的项目根目录（`AI_ENTRY.md` 位于 `{projectRoot}/.ai/entry/`）。
 - `{skillLibraryRoot}`：由 `SKILLKIT_LINK.md` 中 `skillLibraryRootRelative` 解析得到的公共库根目录。
+
+## Skill 路由预检
+
+- 涉及代码理解/修改、调试、规划、测试、文档、Pattern、项目本地 Skill 的任务，**须**先执行公共库 `skills/router/select-skill-for-task.md`。
+- 路由优先级：`.ai/indexes/skill-index.md` → `.ai/skills/project-local/` → `.ai/indexes/pattern-index.md` → `.ai/indexes/code-type-index.md` → `routers/SKILL_ROUTER.md` → `routers/TASK_TRIGGER_MATRIX.md`。
+- `TASK_TRIGGER_MATRIX` §1（`available`）且 Skill 文件存在：**必须先读 Skill 再执行**。
+- `TASK_TRIGGER_MATRIX` §2（`planned`）：**仅**执行表中 fallback，**不得**强制读取不存在的 Skill。
+- 可选状态：`../state/last-skill-routing.md`。
 
 ## 能力范围提示
 

@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 基于样例源码抽象 Pattern Pack 草稿。
+triggerWhen:
+  - 提取 Pattern
+  - extract code pattern
+---
 # Skill：extract-code-pattern
 
 ## 1. 目的

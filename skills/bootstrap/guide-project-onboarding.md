@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 引导式完成 HACF 项目接入落地流程。
+triggerWhen:
+  - 项目接入
+  - onboarding 向导
+---
 # Skill：guide-project-onboarding
 
 ## 1. 目的

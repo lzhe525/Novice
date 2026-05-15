@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 检查项目本地 .ai/ 协作框架健康状态。
+triggerWhen:
+  - 健康检查
+  - project ai health
+---
 # Skill：check-project-ai-health
 
 ## 1. 目的

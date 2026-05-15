@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 生成项目本地框架升级计划。
+triggerWhen:
+  - 升级计划
+  - plan hacf upgrade
+---
 # Skill：plan-hacf-local-upgrade
 
 ## 1. 目的

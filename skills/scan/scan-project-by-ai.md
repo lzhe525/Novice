@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 项目级 AI 扫盘并写入 overview、索引与状态。
+triggerWhen:
+  - 项目扫盘
+  - scan project
+---
 # Skill：scan-project-by-ai
 
 ## 1. 目的

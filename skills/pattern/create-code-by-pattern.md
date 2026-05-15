@@ -1,3 +1,12 @@
+---
+status: active
+routeEnabled: true
+description: 基于已激活 Pattern Pack 生成或修改同类代码。
+triggerWhen:
+  - Pattern 生成
+  - 按 Pattern 改码
+  - codeTypeId 实现
+---
 # Skill：create-code-by-pattern
 
 ## 1. 目的

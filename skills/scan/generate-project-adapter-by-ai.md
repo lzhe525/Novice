@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 生成紧凑项目画像与证据表。
+triggerWhen:
+  - 项目适配器
+  - project adapter
+---
 # Skill：generate-project-adapter-by-ai
 
 ## 1. 目的

@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 模块级 AI 扫盘五件套。
+triggerWhen:
+  - 模块扫盘
+  - scan module
+---
 # Skill：scan-module-by-ai
 
 ## 1. 目的

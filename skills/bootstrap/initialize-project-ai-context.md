@@ -1,3 +1,12 @@
+---
+status: active
+routeEnabled: false
+description: 初始化项目 .ai/entry、state、config 及模板实例化文件。
+triggerWhen:
+  - 初始化 .ai
+  - initialize project ai context
+---
+
 # Skill：initialize-project-ai-context
 
 ## 1. 目的

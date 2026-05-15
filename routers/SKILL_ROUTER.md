@@ -4,6 +4,34 @@
 
 表中「Skill 路径」均相对于 `{skillLibraryRoot}`，使用正斜杠。
 
+## Router / 预检
+
+任务开始前（代码理解/修改、调试、规划、测试、文档、Pattern、项目本地 Skill 相关），Agent **须**先完成 Skill 路由预检：
+
+| 用途 | 相对路径 |
+|------|----------|
+| 任务 Skill 路由预检（编排） | `skills/router/select-skill-for-task.md` |
+| 任务信号 → Skill / fallback | `routers/TASK_TRIGGER_MATRIX.md` |
+| 预检义务 Rule | `rules/routing/skill-routing-preflight-rule.md` |
+| 强制触发级别 Rule | `rules/routing/mandatory-skill-trigger-rule.md` |
+| 路由启用条件 Rule | `rules/routing/skill-route-enabled-rule.md` |
+| 新 Skill 注册 Rule | `rules/routing/new-skill-registration-rule.md` |
+| 路由校验 Rule | `rules/routing/skill-routing-validation-rule.md` |
+
+**细查顺序**：`TASK_TRIGGER_MATRIX`（信号匹配）→ 本表（能力登记）→ 项目本地 `.ai/indexes/skill-index.md`（**仅**登记行，不扫描目录；见 `skill-route-enabled-rule`）。
+
+仅 `TASK_TRIGGER_MATRIX` **Available**（`status: available`）且 Skill 文件存在、`status: active`、`routeEnabled: true` 时 **必须先读 Skill 再执行**；**Planned** 仅执行 fallback，**不得**强制读取不存在的 Skill。
+
+可选预检状态：`{projectRoot}/.ai/state/last-skill-routing.md`。
+
+## Router（路由维护）
+
+| 任务意图（中文） | Skill 路径 | 说明 |
+|---|---|---|
+| 根据当前任务选择应该使用的项目本地或公共 Skill | `skills/router/select-skill-for-task.md` | 读取项目本地 skill-index、公共 Router / Trigger Matrix，执行任务路由预检 |
+| 检查公共库和项目本地 Skill 路由配置是否一致 | `skills/router/validate-skill-routing.md` | 检查 Router、Trigger Matrix、Skill metadata、routeEnabled 和路径存在性 |
+| 引导注册一个新增 Skill 到 HACF 路由体系 | `skills/router/register-new-skill.md` | 检查 Skill metadata，并引导更新 Router / Trigger Matrix |
+
 ## Bootstrap
 
 | 任务意图（中文） | Skill 路径 | 说明 |

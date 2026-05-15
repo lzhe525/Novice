@@ -1,3 +1,11 @@
+---
+status: active
+routeEnabled: false
+description: 校验 Pattern Pack 草稿结构完整性。
+triggerWhen:
+  - 校验 Pattern Pack
+  - validate pattern pack
+---
 # Skill：validate-pattern-pack
 
 ## 1. 目的
